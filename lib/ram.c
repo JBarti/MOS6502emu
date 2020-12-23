@@ -3,7 +3,16 @@
 
 #include"../include/ram.h"
 
-const Register *RAM = create_register(0x0000, 0x00);
+Register RAM = {
+    0x0000,
+    0x00,
+    NULL,
+    NULL
+};
+
+Iterator RAM_iter = &RAM;
+Iterator RAM_first = &RAM;
+
 
 Register *create_register(addr16 address, byte val) {
     Register *new = (Register *)malloc(sizeof(Register));
@@ -22,52 +31,81 @@ Register *create_register(addr16 address, byte val) {
 }
 
 
-Iterator *create_iterator(Register *from) {
-    Iterator *iter = from;
+Iterator create_iterator(Register *from) {
+    Iterator iter = from;
     return iter;
 }
 
 
-Iterator *insert_element(Iterator *iter, addr16 address, byte val) {
+Iterator insert_after(Iterator iter, addr16 address, byte val) {
+    Register *new = create_register(address, val);
+
+    if(iter->after == NULL) { 
+        new->before = iter;
+        iter->after = new; 
+
+        return new;
+    }
+
+    new->before = iter;
+    new->after = iter->after;
+
+    iter->after->before = new;
+    iter->after = new;
+
+    return new;
+}
+
+
+Iterator insert_before(Iterator iter, addr16 address, byte val) {
+    Register *new = create_register(address, val);
+
+    if(iter->before == NULL) {
+        new->after = iter;
+        iter->before = new;
+
+        return new;
+    }
+
+    new->after = iter;
+    new->before = iter->before;
+
+    iter->before->after = new;
+    iter->before = new;
+
+    return new;
+}
+
+
+Iterator mem_write(Iterator iter, addr16 address, byte val) {
     if(address > iter->address) { 
-        if(iter->after == NULL) { 
-            iter->after = create_register(address, val); 
-            return iter->after;
-        }
-        else if(address < iter->after->address) {
-            Register *new = create_register(address, val);
-            new->before = iter;
-            new->after = iter->after;
-
-            iter->after->before = new;
-            iter->after = new;
-
-            return new;
+        if(iter->after == NULL || address < iter->after->address) { 
+            return insert_after(iter, address, val);
         }
         else {
-            return insert_element(iter->after, address, val);
+            return mem_write(iter->after, address, val);
         }
     }
     else if(address < iter->address) {
-        if(iter->before == NULL) {
-            iter->before = create_register(address, val);
-            return iter->before;
-        }
-        else if(address > iter->before->address) {
-            Register *new = create_register(address, val);
-
-            new->after = iter;
-            new->before = iter->before;
-
-            iter->before->after = new;
-            iter->before = new;
+        if(iter->before == NULL || address > iter->before->address) {
+            return insert_before(iter, address, val);
         }
         else {
-            return insert_element(iter->before, address, val);
+            return mem_write(iter->before, address, val);
         }
     }
 
-    printf("Error: can't insert register\n");
+    iter->val = val;
     return iter;
+}
+
+
+void print_memory(Register *first) {
+    Iterator iter = create_iterator(first);
+
+    printf("ADDR \t VAL\n");
+    foreach(iter, first) {
+        printf("0x%04x\t0x%02x\n", iter->address, iter->val);
+    } 
 }
 

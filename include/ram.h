@@ -3,11 +3,15 @@
 // The value of a register not present in the list will be treated as zero.
 
 
+#define foreach(t, r) for(t=r; t != NULL; t=t->after)
+
 typedef struct _register Register;
-typedef struct _register Iterator;
+typedef struct _register *Iterator;
 
 typedef unsigned short addr16;
 typedef unsigned char byte;
+
+Register *RAM_iter;
 
 struct _register {
     addr16 address; 
@@ -18,6 +22,6 @@ struct _register {
 
 
 Register *create_register(addr16 address, byte val);
-Register *insert_after(Iterator *iter, addr16 address, byte val);
-Iterator *create_iterator(Register *from);
-Iterator *insert_element(Iterator *iter, addr16 address, byte val);
+Iterator create_iterator(Register *from);
+Iterator mem_write(Iterator iter, addr16 address, byte val);
+void print_memory(Register *first);

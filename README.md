@@ -71,3 +71,15 @@ The negative flag is set if the result of the last operation had bit 7 set to a 
 When the program starts the code is loaded into a memory address specified by the first line of the .asm source code file or noted in a way by the developer.
 
 The PC is then set to point to the address where the code is loaded.
+
+
+# Installation
+
+The current stage of the emulator uses ncurses for visualisation and debuging.
+
+To install ncurses on debian based systems run:
+`sudo apt-get install libncurses5-dev libncursesw5-dev`
+
+To compile the code run: `make`.
+
+After the code is compiled run `./main`.
