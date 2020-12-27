@@ -66,9 +66,20 @@ The negative flag is set if the result of the last operation had bit 7 set to a 
 
 
 
+## Opcode interpreting tips
+
+Every CPU instruction consists of 3 bytes at most. The first byte being the opcode and all of the other are memory addresses or values. That is why every opcode method inside the code has one `byte opcode` and one `byte vals[2]` array as arguments. If the opcode has a 16-bit memory address as an argument it will be listed in little endian (for e.g. the command ADC $1234 will compile to 60 34 12). 
+
+Currently supported opcodes are:
+
+`ADC` : add with carry
+
+
+
 ## Running code
 
 When the program starts the code is loaded into a memory address specified by the first line of the .asm source code file or noted in a way by the developer.
+I have noticed that on multiple online assemblers the program is into the `$6000` address if nothing is specified.
 
 The PC is then set to point to the address where the code is loaded.
 

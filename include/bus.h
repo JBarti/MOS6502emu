@@ -3,7 +3,8 @@
 
 
 typedef unsigned char byte;
+typedef unsigned short addr16;
 
-byte readCPU(byte addr);
-void writeCPU(byte addr, byte data);
+byte readCPU(addr16 addr);
+void writeCPU(addr16 addr, byte data);
 void tick();

@@ -100,6 +100,31 @@ Iterator mem_write(Iterator iter, addr16 address, byte val) {
 }
 
 
+Iterator mem_read(Iterator iter, addr16 address, byte *valptr) {
+    if(address > iter->address) { 
+        if(iter->after == NULL || address < iter->after->address) { 
+            *valptr = 0x00; 
+            return iter;
+        }
+        else {
+            return mem_read(iter->after, address, valptr);
+        }
+    }
+    else if(address < iter->address) {
+        if(iter->before == NULL || address > iter->before->address) {
+            *valptr = 0x00; 
+            return iter;
+        }
+        else {
+            return mem_read(iter->before, address, valptr);
+        }
+    }
+
+    *valptr = iter->val; 
+    return iter;
+}
+
+
 void print_memory(Register *first) {
     Iterator iter = create_iterator(first);
 
