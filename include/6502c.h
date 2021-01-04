@@ -7,6 +7,9 @@
 #define OVERFLOW_FLAG 1
 #define NEGATIVE_FLAG 0
 
+#define STACK_BEGIN 0x00
+#define STACK_END 0xff
+
 #define get_bit(val, pos) !!(val & (0b00000001 << pos))
 
 typedef unsigned char byte;
@@ -20,9 +23,12 @@ struct _6502c {
     byte Y;
     
     byte SP;
-    byte PC;
+    addr16 PC;
 
     byte status; // | 0 | C | Z | I | D | B | V | N |
+
+    byte (*pullstack)();
+    byte (*pushstack)(byte val);
 
     byte (*readbus)(addr16); 
     void (*writebus)(addr16, byte);
@@ -35,6 +41,8 @@ void initCPU(byte (*readbus)(addr16), void (*writebus)(addr16, byte));
 byte get_status_flag(byte flag_pos);
 byte set_status_flag(byte flag_pos, byte value);
 addr16 le_to_be(byte lsb, byte msb);
+byte stack_push(byte val);
+byte stack_pull();
 
 // Opcodes
 void ADC(byte opcode, byte args[2]);
@@ -60,7 +68,8 @@ void DEC(byte opcode, byte args[2]);
 void DEX(byte opcode, byte args[2]); 
 void DEY(byte opcode, byte args[2]); 
 void EOR(byte opcode, byte args[2]); 
-
+void LDA(byte opcode, byte args[2]); 
+void LDX(byte opcode, byte args[2]); 
 
 // Opcode utils
 byte ADC_util(byte val);
@@ -71,16 +80,22 @@ sbyte CMP_util(byte val);
 sbyte CPX_util(byte val);
 sbyte CPY_util(byte val);
 byte EOR_util(byte val);
+byte LD_util(byte val, byte *reg);
+byte LSR_util(byte val);
+byte ORA_util(byte val);
+byte ROL_util(byte val);
+byte ROR_util(byte val);
 
 // Addressing modes
 byte addc(byte val1, byte val2, byte *carry);
 byte immediate(byte args[2]);
 byte zero_page(byte args[2], addr16 *val_addr);
 byte zero_page_x(byte args[2], addr16 *val_addr);
+byte zero_page_y(byte args[2], addr16 *val_addr);
 byte absolute(byte args[2], addr16 *val_addr);
 byte abs_x(byte args[2], addr16 *val_addr);
 byte abs_y(byte args[2], addr16 *val_addr);
-byte indirect(byte args[2], addr16 *val_addr);
+void indirect(byte args[2], addr16 *val_addr);
 byte indirect_x(byte args[2], addr16 *val_addr);
 byte indirect_y(byte args[2], addr16 *val_addr);
 sbyte relative(byte args[2]);

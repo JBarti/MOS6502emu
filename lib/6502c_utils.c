@@ -45,10 +45,9 @@ byte AND_util(byte val) {
 
 
 byte ASL_util(byte val) {
-    set_status_flag(CARRY_FLAG, val >= 0b10000000);
-
+    set_status_flag(CARRY_FLAG, get_bit(val, 7));
     val <<= 1;
-
+    set_status_flag(NEGATIVE_FLAG, get_bit(val, 7));
     return val;
 }
 
@@ -101,6 +100,59 @@ byte EOR_util(byte val) {
     byte res = mainCPU.A ^ val;
 
     set_status_flag(ZERO_FLAG, res == 0);
+    set_status_flag(NEGATIVE_FLAG, get_bit(res, 7));
+
+    return res;
+}
+
+
+byte LD_util(byte val, byte *reg) {
+    set_status_flag(ZERO_FLAG, !!val);
+    set_status_flag(ZERO_FLAG, get_bit(val, 7));
+    *reg = val;
+
+    return *reg;
+}
+
+
+byte LSR_util(byte val) {
+    set_status_flag(CARRY_FLAG, get_bit(val, 0));
+
+    val >>= 1;
+
+    set_status_flag(ZERO_FLAG, val == 0);
+    set_status_flag(NEGATIVE_FLAG, get_bit(val, 7));
+    
+    return val;
+}
+
+
+byte ORA_util(byte val) {
+    mainCPU.A |= val;
+
+    set_status_flag(ZERO_FLAG, mainCPU.A == 0);
+    set_status_flag(NEGATIVE_FLAG, get_bit(mainCPU.A, 7));
+
+    return mainCPU.A;
+}
+
+
+byte ROL_util(byte val) {
+    byte res = (val << 1) + get_status_flag(CARRY_FLAG);
+
+    set_status_flag(CARRY_FLAG, get_bit(val, 7));
+    set_status_flag(ZERO_FLAG, res = 0);
+    set_status_flag(NEGATIVE_FLAG, get_bit(res, 7));
+
+    return res;
+}
+
+
+byte ROR_util(byte val) {
+    byte res = (val >> 1) + (get_status_flag(CARRY_FLAG) << 7);
+
+    set_status_flag(CARRY_FLAG, get_bit(val, 0));
+    set_status_flag(ZERO_FLAG, res = 0);
     set_status_flag(NEGATIVE_FLAG, get_bit(res, 7));
 
     return res;

@@ -79,12 +79,23 @@ The negative flag is set if the result of the last operation had bit 7 set to a 
 
 Every CPU instruction consists of 3 bytes at most. The first byte being the opcode and all of the other are memory addresses or values. That is why every opcode method inside the code has one `byte opcode` and one `byte vals[2]` array as arguments. If the opcode has a 16-bit memory address as an argument it will be listed in little endian (for e.g. the command `ADC $1234` will compile to `60 34 12`). 
 
-When dealing with the `ADC` opcode we can use this formula to determine the status `Overflow flag` value: 
+When dealing with the `ADC` opcode we can use this formula to determine the status `Overflow flag` value:  `(first_sumator ^ sum) & (second_sumator ^ sum) & 0x80`.
+
+Emulating the `SBC` opcode can be done by calling the function that emulates `ADC` but with the two's complement of the number you have to subtract from the accumulator. The twos complement can be calculated by usin the formula: `~val + 1`.
+
+The 6502c chip doesn't have an arithmetical shift operation despite there being an operation called `ASL -> arithmetical shift left`. That operation is actually a logical shift because it doesn't preserve the sign bit.
+
+The operation `TXS -> transfer stack pointer to X` has a very confusing name and definition. When called the operation sets the value of the X register to the address that the stack pointer is currently pointing.
+
 
 Currently supported opcodes are:
 
 `ADC` : add with carry
 
+
+## Stack implementation
+
+I should probably write something about this.
 
 
 ## Running code
@@ -94,8 +105,6 @@ When the program starts the code is loaded into a memory address specified by th
 I have noticed that on multiple online assemblers the program is loaded into the address space starting at `$6000` if nothing else is specified.
 
 The `PC` is then set to point to the address where the code is loaded.
-
-
 
 
 # Installation

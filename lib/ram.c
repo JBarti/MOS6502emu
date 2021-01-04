@@ -11,6 +11,7 @@ Register RAM = {
 };
 
 Iterator RAM_iter = &RAM;
+Iterator RAM_stack = &RAM;
 Iterator RAM_first = &RAM;
 
 
@@ -32,8 +33,7 @@ Register *create_register(addr16 address, byte val) {
 
 
 Iterator create_iterator(Register *from) {
-    Iterator iter = from;
-    return iter;
+    return &RAM;
 }
 
 
