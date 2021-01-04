@@ -2,6 +2,7 @@
 
 #include"./include/ram.h"
 #include"./include/6502c.h"
+#include "./include/bus.h"
 
 extern Iterator RAM_iter;
 extern  Iterator RAM_first;
@@ -51,7 +52,31 @@ int main() {
     printf("%d\n", (byte)test_overflow);
 
     byte test_endian[2] = {0x34, 0x12};
-    printf("%04x\n", le_to_be(test_endian));
+    printf("%04x\n", le_to_be(test_endian[0], test_endian[1]));
+    byte test = 0x51 + 0xE9;
+    printf("%02x\n", test);
+
+    byte signed_test = 0b11110000;
+    printf("%d\n", (sbyte)signed_test);
+
+    byte unsigned_sum = 201;
+    sbyte signed_sum = -10;
+    unsigned_sum += signed_sum;
+    printf("%hhu\n", unsigned_sum);
+
+
+    printf("#################\n");
+    printf("#####OPCODES#####\n");
+    printf("#################\n");
+    printf("\n");
+
+    // 0x62
+    mainCPU.X = 0xE9;
+    initCPU(readCPU, writeCPU);
+    byte vals[2] = {0x51, 0x00};
+    writeCPU(0x3A, 0x04);
+    writeCPU(0x3B, 0x31);
+    ADC(0x62, vals);
 
 
     return 1;

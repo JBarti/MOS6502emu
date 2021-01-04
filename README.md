@@ -2,14 +2,21 @@
 
 For the time being we will focus on emulating the NES CPU, since I have absolutely no idea what I'm doing.
 
+In this README file I will be writing information I had trouble finding on the internet.
+
+The reason why I'm even creating this emulator is because I've been programming since I was 14 and I have noooo idea how any of the components of the computer work. Also I wanted to put my C programming skills to the test and create an interesting opensource project I can talk about.
+
+
+
 ## BUS
 
 All of the devices that the processor communicates with are connected to a bus and are given a certain address space. The processor can send a read or a write command to a certain address which corresponds to a device on the bus.
 
 For the time being the only thing connected to our bus will be the RAM chip occupying the whole address space.
 
-
 **RAM**: 0x0000 - 0xffff (64 kB)
+
+
 
 
 ## CPU
@@ -34,7 +41,9 @@ The status register contains flags that allow us to inspect the state of the CPU
  - B: Break command
  - V: Overflow flag
  - N: Negative flag
+   
 
+*The status flag descriptions were copied from http://www.obelisk.me.uk/6502/registers.html#C*
 
 **Carry Flag**
 
@@ -62,13 +71,15 @@ The overflow flag is set during arithmetic operations if the result has yielded 
 
 **Negative Flag**
 
-The negative flag is set if the result of the last operation had bit 7 set to a one.
+The negative flag is set if the result of the last operation had bit 7 set to a one. 
 
 
 
 ## Opcode interpreting tips
 
-Every CPU instruction consists of 3 bytes at most. The first byte being the opcode and all of the other are memory addresses or values. That is why every opcode method inside the code has one `byte opcode` and one `byte vals[2]` array as arguments. If the opcode has a 16-bit memory address as an argument it will be listed in little endian (for e.g. the command ADC $1234 will compile to 60 34 12). 
+Every CPU instruction consists of 3 bytes at most. The first byte being the opcode and all of the other are memory addresses or values. That is why every opcode method inside the code has one `byte opcode` and one `byte vals[2]` array as arguments. If the opcode has a 16-bit memory address as an argument it will be listed in little endian (for e.g. the command `ADC $1234` will compile to `60 34 12`). 
+
+When dealing with the `ADC` opcode we can use this formula to determine the status `Overflow flag` value: 
 
 Currently supported opcodes are:
 
@@ -78,15 +89,18 @@ Currently supported opcodes are:
 
 ## Running code
 
-When the program starts the code is loaded into a memory address specified by the first line of the .asm source code file or noted in a way by the developer.
-I have noticed that on multiple online assemblers the program is into the `$6000` address if nothing is specified.
+When the program starts the code is loaded into a memory address specified by the first line of the .asm source code file or noted by the developer.
 
-The PC is then set to point to the address where the code is loaded.
+I have noticed that on multiple online assemblers the program is loaded into the address space starting at `$6000` if nothing else is specified.
+
+The `PC` is then set to point to the address where the code is loaded.
+
+
 
 
 # Installation
 
-The current stage of the emulator uses ncurses for visualisation and debuging.
+The current stage of the emulator uses ncurses for vizualisation and debugging.
 
 To install ncurses on debian based systems run:
 `sudo apt-get install libncurses5-dev libncursesw5-dev`
@@ -94,3 +108,26 @@ To install ncurses on debian based systems run:
 To compile the code run: `make`.
 
 After the code is compiled run `./main`.
+
+I will probably make a better makefile when I learn how to do it properly :)
+
+# References
+
+This is the list of literature is used to develop this emulator: 
+
+- http://www.obelisk.me.uk/6502/reference.html#ADC
+  - Great reference for learning what each opcode does, but does not have enough info on addressing modes and two hardest opcodes to emulate `ADC` and `SBC`.
+- https://yizhang82.dev/nes-emu-overview
+  - Introduces you to the hardware of the NES and describes a good starting plan, awesome if you want to emulate the whole NES and not just the CPU but teaches how the CPU works in a larger system.
+- https://www.youtube.com/watch?v=fWqBmmPQP40
+  - Video from a conference where the dude who helped reverse engineer the original 6502C processor talks how they did it, very fun, very interesting.
+- https://www.youtube.com/watch?v=LnzuMJLZRdU
+  - Ben Eater has a whole series in how to build your own computer using the 6502C.
+
+- https://www.youtube.com/watch?v=8XmxKPJDGU0
+  - This guy pretty much explains how to do the whole emulator in a video, doesn't implement all of the opcodes tho. If you want a coding challenge, I would recommend you watch the first 15 minutes where he explains how the CPU works without writing code.
+- http://6502.org/tools/asm/
+  - A list of development tools that can help you debug your emulator and write code for it. There are some great online assemblers listed that you can use to compile 6502C assembly code into bytecode.
+- http://wiki.nesdev.com/w/index.php/CPU
+  - The nesdev wiki is a great resource where you can learn how the CPU communicates with other elements and how to write 6502C code. It contains other information about the chips inside the NES. The page is very well written and is a great starting point for noobs (that's why I also started there).
+

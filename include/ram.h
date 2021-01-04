@@ -8,8 +8,9 @@
 typedef struct _register Register;
 typedef struct _register *Iterator;
 
-typedef unsigned short addr16;
 typedef unsigned char byte;
+typedef signed char sbyte;
+typedef unsigned short addr16;
 
 Register *RAM_iter;
 

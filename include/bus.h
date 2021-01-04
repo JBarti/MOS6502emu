@@ -3,6 +3,7 @@
 
 
 typedef unsigned char byte;
+typedef signed char sbyte;
 typedef unsigned short addr16;
 
 byte readCPU(addr16 addr);
