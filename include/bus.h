@@ -1,8 +1,8 @@
 // The bus implements methods for reading and writing to certain addresses. 
 // It then calls devices mapped to them.
 
-#define STACK_BEGIN 0x0100
-#define STACK_END 0x01ff
+#define RAM_STACK_BEGIN 0x0100
+#define RAM_STACK_END 0x01ff
 
 typedef unsigned char byte;
 typedef signed char sbyte;

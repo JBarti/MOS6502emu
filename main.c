@@ -1,15 +1,30 @@
 #include<ncurses.h>
 #include<string.h>
+#include<stdlib.h>
 
 #include"./include/ram.h"
+#include"./include/bus.h"
 
-#define MAX_MEM_COLS 16
+#define MAX_MEM_COLS 15
+
+#define MAX_PAGES 257 
+#define PAGE_SIZE 255
+#define NEXT_PAGE 0
+#define PREV_PAGE 1
+#define CURR_PAGE 2
 
 extern Iterator RAM_iter;
 extern  Iterator RAM_first;
 
+WINDOW *RAM_WIN;
+WINDOW *ROOT_WIN;
+WINDOW *STAT_WIN;
+WINDOW *CPU_WIN;
 
-int *show_RAM_util(WINDOW *RAM_win, int index, byte val) {
+int ROWS, COLS;
+
+
+void show_RAM_util(int index, byte val, int **rowptr, int **colptr) {
     static int col = 1;
     static int row = 0;
     
@@ -17,36 +32,48 @@ int *show_RAM_util(WINDOW *RAM_win, int index, byte val) {
     row += (index % MAX_MEM_COLS) == 0;
 
     if(index % MAX_MEM_COLS == 0) {
-        mvwprintw(RAM_win, row, 1, "0x%04x", index);
+        mvwprintw(RAM_WIN, row, 1, "0x%04x", index);
     }
-    mvwprintw(RAM_win, row, col, "%02x", val);
+    mvwprintw(RAM_WIN, row, col, "%02x", val);
 
-    return &row;
+    *colptr = &col;
+    *rowptr = &row;
 }
 
 
-void show_RAM(WINDOW *RAM_win) {
-    int *rowptr;
-    for(int i=0x0000; i<0x0100; i++) {
-        byte val;
-        RAM_iter = mem_read(RAM_iter, i, &val);
-        rowptr = show_RAM_util(RAM_win, i, val);
+void show_RAM(byte move_opt) {
+    static int page = 1;
+    int *rowptr, *colptr;
+    
+    if(move_opt == NEXT_PAGE) {
+        if(page == MAX_PAGES) { page = 1; }
+        else { page +=1; }
     }
 
-    *rowptr += 1;
-
-    for(int i=0x8000; i<0x8100; i++) {
-        byte val;
-        RAM_iter = mem_read(RAM_iter, i, &val);
-        rowptr = show_RAM_util(RAM_win, i, val);
+    if(move_opt == PREV_PAGE) {
+        if(page == 1) { page = MAX_PAGES; }
+        else { page -=1; }
     }
 
-    wrefresh(RAM_win);
+    werase(RAM_WIN);
+    box(RAM_WIN, 0, 0);
+    mvwprintw(RAM_WIN, 0, 1, "RAM display");
+
+    for(int i=(page-1)*PAGE_SIZE; i<page*PAGE_SIZE; i++) {
+        byte val;
+        RAM_iter = mem_read(RAM_iter, i, &val);
+        show_RAM_util(i, RAM_iter->val, &rowptr, &colptr);
+    }
+
+    *rowptr = 0;
+    *colptr = 1;
+
+    wrefresh(RAM_WIN);
 }
 
 
 WINDOW *create_win_RAM(int max_rows, int max_cols) {
-    WINDOW *win = newwin(max_rows, 16*2+25, 0, 0);
+    WINDOW *win = newwin(max_rows-1, max_cols/2, 0, 0);
 
     box(win, 0, 0);
     mvwprintw(win, 0, 1, "RAM display");
@@ -57,20 +84,68 @@ WINDOW *create_win_RAM(int max_rows, int max_cols) {
 }
 
 
+WINDOW *create_win_stat(int max_rows, int max_cols) {
+    WINDOW *win = newwin(1, max_cols, max_rows-1, 0);
+    refresh();
+    wrefresh(win);
+    
+    return win;
+}
+
+
+WINDOW *create_win_CPU(int max_rows, int max_cols) {
+    WINDOW *win = newwin(max_rows-1, max_cols/2, 0, max_cols/2);
+    box(win, 0, 0);
+    refresh();
+    wrefresh(win);
+
+    return win;
+}
+
+void show_key_press(char key){
+    werase(STAT_WIN);
+    mvwprintw(STAT_WIN, 0, COLS-3, &key);
+    refresh();
+    wrefresh(STAT_WIN);
+}
+    
+
+void key_press(char key) {
+    show_key_press(key);
+
+    switch(key){
+        case 'q':
+            delwin(RAM_WIN);
+            endwin();
+            exit(EXIT_SUCCESS);
+        case 'l':
+            show_RAM(NEXT_PAGE);
+            break;
+        case 'h':
+            show_RAM(PREV_PAGE);
+            break;
+    }
+}
+
 int main() {
-    WINDOW *win_root = initscr();
+    ROOT_WIN = initscr();
     cbreak(); //Stop buffering of typed characters by TTY
     noecho(); //Stop echoing of typed characters
     curs_set(0); //Hide the cursor from the screen
     
-    int rows, cols;
-    getmaxyx(win_root, rows, cols);
+    getmaxyx(ROOT_WIN, ROWS, COLS);
 
-    RAM_iter = mem_write(RAM_iter, 0x0050, 0xff);
-    WINDOW *RAM_win = create_win_RAM(rows, cols);
-    show_RAM(RAM_win);
+    RAM_WIN = create_win_RAM(ROWS, COLS);
+    show_RAM(CURR_PAGE);
 
-    getch();
-    delwin(RAM_win);
-    endwin();
+    STAT_WIN = create_win_stat(ROWS, COLS);
+    CPU_WIN = create_win_CPU(ROWS, COLS);
+
+    char key;
+    while(1) {
+        key = getch();
+        key_press(key);
+    }
+
+    return 1;
 }

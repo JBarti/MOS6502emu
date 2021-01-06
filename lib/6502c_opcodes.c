@@ -17,10 +17,10 @@ void ADC(byte opcode, byte args[2]) { // Add with carry
         case 0x75: // Zero Page, X
             val = zero_page_x(args, &val_addr);
             break;
-        case 0x6D: // Absolute
+        case 0x6d: // Absolute
             val = absolute(args, &val_addr);
             break;
-        case 0x7D: // Absolute, X
+        case 0x7d: // Absolute, X
             val = abs_x(args, &val_addr);
             break;
         case 0x79: // Absolute, Y
@@ -37,7 +37,7 @@ void ADC(byte opcode, byte args[2]) { // Add with carry
             return;
     }
 
-    ADC_util(val);
+    ADC_util(val, ADD_POSITIVE);
     printf("STATUS: %02x\n", mainCPU.status);
 }
 
@@ -56,10 +56,10 @@ void AND(byte opcode, byte args[2]) { // Logical AND
         case 0x35: // Zero Page, X
             val = zero_page_x(args, &val_addr);
             break;
-        case 0x2D: // Absolute
+        case 0x2d: // Absolute
             val = absolute(args, &val_addr);
             break;
-        case 0x3D: // Absolute, X
+        case 0x3d: // Absolute, X
             val = abs_x(args, &val_addr);
             break;
         case 0x39: // Absolute, Y
@@ -85,7 +85,7 @@ void ASL(byte opcode, byte args[2]) { // Arytmetic shift left
     addr16 val_addr;
 
     switch(opcode) {
-        case 0x0A: // Accumulator
+        case 0x0a: // Accumulator
             mainCPU.A = ASL_util(mainCPU.A);
             set_status_flag(ZERO_FLAG, mainCPU.A == 0);
             return;
@@ -95,10 +95,10 @@ void ASL(byte opcode, byte args[2]) { // Arytmetic shift left
         case 0x16: // Zero Page, X
             val = zero_page_x(args, &val_addr);
             break;
-        case 0x0E: // Absolute
+        case 0x0e: // Absolute
             val = absolute(args, &val_addr);
             break;
-        case 0x1E: // Absolute X
+        case 0x1e: // Absolute X
             val = abs_x(args, &val_addr);
             break;
         default:
@@ -116,6 +116,17 @@ void BCC(byte opcode, byte args[2]) { // Branch if carry clear
         return;
     }
 
+    if(!get_status_flag(CARRY_FLAG))
+        mainCPU.PC += relative(args);
+}
+
+
+void BCS(byte opcode, byte args[2]) { // Branch if carry set
+    if(opcode != 0xb0) {
+        printf("Unrecognized opcode for BCS %02x\n", opcode);
+        return;
+    }
+    
     if(get_status_flag(CARRY_FLAG))
         mainCPU.PC += relative(args);
 }
@@ -138,18 +149,12 @@ void BIT(byte opcode, byte args[2]) { // Bit test
 
     switch(opcode) {
         case 0x24: // Zero Page
-        {
             val = zero_page(args, &val_addr);
-        }
         case 0x2c: // Absolute
-        {
             val = absolute(args, &val_addr);
-        }
         default:
-        {
             printf("Unrecognized opcode for BIT %02x\n", opcode);
             return;
-        }
     }  
 
     BIT_util(val);
@@ -190,7 +195,19 @@ void BPL(byte opcode, byte args[2]) { // Branch if positive
 
 
 void BRK(byte opcode, byte args[2]) { // Force interupt
-    // Requires stack and interupt vector
+    if(opcode != 0x00) {
+        printf("Unrecognized opcode for BRK %02x\n", opcode);
+        return; 
+    }
+
+    push_PC();
+    mainCPU.pushstack(mainCPU.status);
+
+    byte addr_lsb = mainCPU.readbus(0xfffe);
+    byte addr_msb = mainCPU.readbus(0xffff);
+    mainCPU.PC = le_to_be(addr_lsb, addr_msb);
+
+    set_status_flag(BREAK_CMD, 1);
 }
 
 
@@ -299,13 +316,13 @@ void CPX(byte opcode, byte args[2]) { // Compare X register
     addr16 val_addr;
 
     switch(opcode) {
-        case 0xe0:
+        case 0xe0: // Immediate
             val = immediate(args);
             break;
-        case 0xe4:
+        case 0xe4: // Zero Page
             val = zero_page(args, &val_addr);
             break;
-        case 0xec:
+        case 0xec: // Absolute
             val = absolute(args, &val_addr);
             break;
         default:
@@ -322,13 +339,13 @@ void CPY(byte opcode, byte args[2]) { // Compare Y register
     addr16 val_addr;
 
     switch(opcode) {
-        case 0xe0:
+        case 0xc0: // Immediate
             val = immediate(args);
             break;
-        case 0xe4:
+        case 0xc4: // Zero Page
             val = zero_page(args, &val_addr);
             break;
-        case 0xec:
+        case 0xcc: // Absolute
             val = absolute(args, &val_addr);
             break;
         default:
@@ -345,16 +362,16 @@ void DEC(byte opcode, byte args[2]) { // Decrement memory
     addr16 val_addr;
 
     switch(opcode) {
-        case 0xc6:
+        case 0xc6: // Zero Page
             val = zero_page(args, &val_addr);
             break;
-        case 0xd6:
+        case 0xd6: // Zero Page, X
             val = zero_page_x(args, &val_addr);
             break;
-        case 0xce:
+        case 0xce: // Absolute
             val = absolute(args, &val_addr);
             break;
-        case 0xde:
+        case 0xde: // Absolute, X
             val = abs_x(args, &val_addr);
             break;
         default:
@@ -362,7 +379,7 @@ void DEC(byte opcode, byte args[2]) { // Decrement memory
             return;
     }
 
-    set_status_flag(ZERO_FLAG, val-1 == 0);
+    set_status_flag(ZERO_FLAG, (val-1) == 0);
     set_status_flag(NEGATIVE_FLAG, get_bit((val - 1), 7));
 
     mainCPU.writebus(val_addr, val-1);
@@ -375,7 +392,7 @@ void DEX(byte opcode, byte args[2]) { // Decrement X register
         return;
     } 
 
-    set_status_flag(ZERO_FLAG, mainCPU.X-1 == 0);
+    set_status_flag(ZERO_FLAG, (mainCPU.X - 1) == 0);
     set_status_flag(NEGATIVE_FLAG, get_bit((mainCPU.X - 1), 7));
 
     mainCPU.X -= 1;
@@ -388,7 +405,7 @@ void DEY(byte opcode, byte args[2]) { // Decrement Y register
         return;
     }
 
-    set_status_flag(ZERO_FLAG, mainCPU.Y-1 == 0);
+    set_status_flag(ZERO_FLAG, (mainCPU.Y - 1) == 0);
     set_status_flag(NEGATIVE_FLAG, get_bit((mainCPU.Y - 1), 7));
 
     mainCPU.Y -= 1;
@@ -400,28 +417,28 @@ void EOR(byte opcode, byte args[2]) { // Exclusive OR
     addr16 val_addr;
 
     switch(opcode) {
-        case 0x49:
+        case 0x49: // Immediate
             val = immediate(args);
             break;
-        case 0x45:
+        case 0x45: // Zero Page
             val = zero_page(args, &val_addr);
             break;
-        case 0x55:
+        case 0x55: // Zero Page, X
             val = zero_page_x(args, &val_addr);
             break;
-        case 0x4D:
+        case 0x4d: // Absolute
             val = absolute(args, &val_addr);
             break;
-        case 0x5D:
+        case 0x5d: // Absolute, X
             val = abs_x(args, &val_addr);
             break;
-        case 0x59:
+        case 0x59: // Absolute, Y
             val = abs_y(args, &val_addr);
             break;
-        case 0x41:
+        case 0x41: // (Indirect, X)
             val = indirect_x(args, &val_addr);
             break;
-        case 0x51:
+        case 0x51: // (Indirect), Y
             val = indirect_y(args, &val_addr);
             break;
         default:
@@ -438,16 +455,16 @@ void INC(byte opcode, byte args[2]) { // Increment memory
     addr16 val_addr;
 
     switch(opcode) {
-        case 0xe6:
+        case 0xe6: // Zero Page
             val = zero_page(args, &val_addr);
             break;
-        case 0xf6:
+        case 0xf6: // Zero Page, X
             val = zero_page_x(args, &val_addr);
             break;
-        case 0xee:
+        case 0xee: // Absolute
             val = absolute(args, &val_addr);
             break;
-        case 0xfe:
+        case 0xfe: // Absolute, X
             val = abs_x(args, &val_addr);
             break;
         default:
@@ -455,7 +472,7 @@ void INC(byte opcode, byte args[2]) { // Increment memory
             return;
     }
 
-    set_status_flag(ZERO_FLAG, val+1 == 0);
+    set_status_flag(ZERO_FLAG, (val + 1) == 0);
     set_status_flag(NEGATIVE_FLAG, get_bit((val + 1), 7));
 
     mainCPU.writebus(val_addr, val+1);
@@ -468,7 +485,7 @@ void INX(byte opcode, byte args[2]) { // Increment X register
         return;
     } 
 
-    set_status_flag(ZERO_FLAG, mainCPU.X+1 == 0);
+    set_status_flag(ZERO_FLAG, (mainCPU.X + 1) == 0);
     set_status_flag(NEGATIVE_FLAG, get_bit((mainCPU.X + 1), 7));
 
     mainCPU.X += 1;
@@ -481,10 +498,10 @@ void INY(byte opcode, byte args[2]) { // Increment Y register
         return;
     }
 
-    set_status_flag(ZERO_FLAG, mainCPU.Y+1 == 0);
+    set_status_flag(ZERO_FLAG, (mainCPU.Y + 1) == 0);
     set_status_flag(NEGATIVE_FLAG, get_bit((mainCPU.Y + 1), 7));
 
-    mainCPU.Y -= 1;
+    mainCPU.Y += 1;
 }
 
 
@@ -492,10 +509,10 @@ void JMP(byte opcode, byte args[2]) { // Jump
     addr16 val_addr;
 
     switch(opcode) {
-        case 0x4c:
+        case 0x4c: // Absolute
             absolute(args, &val_addr);
             break;
-        case 0x6c:
+        case 0x6c: // Indirect
             indirect(args, &val_addr); 
     }
 
@@ -504,7 +521,13 @@ void JMP(byte opcode, byte args[2]) { // Jump
 
 
 void JSR(byte opcode, byte args[2]) { // Jump to subroutine
-    // Implement after implementing stack
+    if(opcode != 0x20) {
+        printf("Unrecognized opcode for JSR %02x\n", opcode);
+        return;
+    }
+
+    push_PC();
+    mainCPU.PC = le_to_be(args[0], args[1]);
 }
 
 
@@ -575,7 +598,7 @@ void LDX(byte opcode, byte args[2]) { // Load X register
 }
 
 
-void LDY(byte opcode, byte args[2]) { // Load X register
+void LDY(byte opcode, byte args[2]) { // Load Y register
     byte val;
     addr16 val_addr;
 
@@ -621,7 +644,7 @@ void LSR(byte opcode, byte args[2]) { // Logical shift right
         case 0x4e: // Absolute
             val = absolute(args, &val_addr);
             break;
-        case 0x5e: // Absolute X
+        case 0x5e: // Absolute, X
             val = abs_x(args, &val_addr);
             break;
         default:
@@ -764,10 +787,10 @@ void ROR(byte opcode, byte args[2]) { // Rotate right
         case 0x76: // Zero Page, X
             val = zero_page_x(args, &val_addr);
             break;
-        case 0x2e: // Absolute
+        case 0x6e: // Absolute
             val = absolute(args, &val_addr);
             break;
-        case 0x3e: // Absolute X
+        case 0x7e: // Absolute X
             val = abs_x(args, &val_addr);
             break;
         default:
@@ -786,7 +809,7 @@ void RTI(byte opcode, byte args[2]) { // Return from interrupt
     }
 
     mainCPU.status = mainCPU.pullstack();
-    mainCPU.PC = mainCPU.pullstack();
+    pull_PC();
 }
 
 
@@ -797,7 +820,7 @@ void RTS(byte opcode, byte args[2]) { // Return from subroutine
         return;
     }
 
-    mainCPU.PC = mainCPU.pullstack();
+    pull_PC();
 }
 
 
@@ -815,10 +838,10 @@ void SBC(byte opcode, byte args[2]) { // Subtract with carry
         case 0xf5: // Zero Page, X
             val = zero_page_x(args, &val_addr);
             break;
-        case 0xeD: // Absolute
+        case 0xed: // Absolute
             val = absolute(args, &val_addr);
             break;
-        case 0xfD: // Absolute, X
+        case 0xfd: // Absolute, X
             val = abs_x(args, &val_addr);
             break;
         case 0xf9: // Absolute, Y
@@ -836,7 +859,7 @@ void SBC(byte opcode, byte args[2]) { // Subtract with carry
     }
 
     // Because subtraction is the same as addition with the two's complement
-    ADC_util(~val + 1);
+    ADC_util(~val + 1, ADD_NEGATIVE);
 }
 
 
@@ -851,7 +874,7 @@ void SEC(byte opcode, byte args[2]) { // Set carry flag
 
 
 void SED(byte opcode, byte args[2]) { // Set decimal flag
-    if(opcode != 0x38) {
+    if(opcode != 0xf8) {
         printf("Unrecognized opcode for SED %02x\n", opcode);
         return;
     }
@@ -861,7 +884,7 @@ void SED(byte opcode, byte args[2]) { // Set decimal flag
 
 
 void SEI(byte opcode, byte args[2]) { // Set interrupt disable
-    if(opcode != 0x38) {
+    if(opcode != 0x78) {
         printf("Unrecognized opcode for SEI %02x\n", opcode);
         return;
     }
@@ -954,7 +977,7 @@ void TAX(byte opcode, byte args[2]) { // Transfer accumulator to Y
 
     mainCPU.X = mainCPU.A;
     set_status_flag(ZERO_FLAG, mainCPU.X == 0);
-    set_status_flag(NEGATIVE_FLAG, get_bit(mainCPU.Y, 7));
+    set_status_flag(NEGATIVE_FLAG, get_bit(mainCPU.X, 7));
 }
 
 
@@ -995,4 +1018,22 @@ void TXA(byte opcode, byte args[2]) { // Transfer X to accumulator
 
 
 void TXS(byte opcode, byte args[2]) { // Transfer X to stack pointer
+    if(opcode != 0x9a) {
+        printf("Unrecognized opcode for TXS %02x\n", opcode);
+        return;
+    }
+
+    mainCPU.SP = mainCPU.X;
+}
+
+
+void TYA(byte opcode, byte args[2]) { // Transfer Y to accumulator
+    if(opcode != 0x98) {
+        printf("Unrecognized opcode for TYA %02x\n", opcode);
+        return;
+    }
+
+    mainCPU.A = mainCPU.Y;
+    set_status_flag(ZERO_FLAG, mainCPU.A == 0);
+    set_status_flag(NEGATIVE_FLAG, get_bit(mainCPU.A, 7));
 }

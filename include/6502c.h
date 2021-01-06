@@ -10,6 +10,9 @@
 #define STACK_BEGIN 0x00
 #define STACK_END 0xff
 
+#define ADD_NEGATIVE 0
+#define ADD_POSITIVE 1
+
 #define get_bit(val, pos) !!(val & (0b00000001 << pos))
 
 typedef unsigned char byte;
@@ -41,8 +44,12 @@ void initCPU(byte (*readbus)(addr16), void (*writebus)(addr16, byte));
 byte get_status_flag(byte flag_pos);
 byte set_status_flag(byte flag_pos, byte value);
 addr16 le_to_be(byte lsb, byte msb);
+byte get_lo(addr16 addr);
+byte get_hi(addr16 addr);
 byte stack_push(byte val);
 byte stack_pull();
+void push_PC();
+void pull_PC();
 
 // Opcodes
 void ADC(byte opcode, byte args[2]);
@@ -72,7 +79,7 @@ void LDA(byte opcode, byte args[2]);
 void LDX(byte opcode, byte args[2]); 
 
 // Opcode utils
-byte ADC_util(byte val);
+byte ADC_util(byte val, byte add_opt);
 byte AND_util(byte val);
 byte ASL_util(byte val);
 byte BIT_util(byte val);
@@ -99,4 +106,3 @@ void indirect(byte args[2], addr16 *val_addr);
 byte indirect_x(byte args[2], addr16 *val_addr);
 byte indirect_y(byte args[2], addr16 *val_addr);
 sbyte relative(byte args[2]);
-

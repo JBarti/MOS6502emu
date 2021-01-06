@@ -28,6 +28,11 @@ int main() {
     RAM_iter =  mem_read(RAM_iter, 0x0102, &val);
     printf("%d\n", val);
 
+    byte addr_lo = get_lo(0x00bc);
+    printf("%02x\n", addr_lo);
+    byte addr_hi = get_hi(0x12de);
+    printf("%02x\n", addr_hi);
+
 
     printf("#################\n");
     printf("#####CPU TEST####\n");
