@@ -1,4 +1,5 @@
 #include<stdio.h>
+#include<string.h>
 
 #include"../include/bus.h"
 #include"../include/ram.h"
@@ -7,6 +8,7 @@
 extern Iterator RAM_iter;
 extern Iterator RAM_first;
 extern Iterator RAM_stack;
+extern Iterator RAM_instr;
 
 extern CPU mainCPU;
 
@@ -35,15 +37,62 @@ void writeCPU(addr16 addr, byte data) {
 }
 
 
+void load_prg(char *filename) {
+    FILE *prg = fopen(filename, "rb"); 
+    addr16 addr_start = 0x0600;
+    byte buff[1];
+    
+    while(!feof(prg)) {
+        fread(buff, sizeof(buff), 1, prg);
+        RAM_iter = mem_write(RAM_iter, addr_start, buff[0]);
+        addr_start ++;
+    }
+}
+
+
+void start_bus(char *filename) {
+    initCPU(readCPU, writeCPU);
+    mainCPU.PC = 0x0600; // Starting address of program counter
+    load_prg(filename);
+    // load program into memory
+    // create_execution_tree
+}
+
+
+void restart_bus() {
+    initCPU(readCPU, writeCPU);
+}
+
+
+void tick() {
+    byte opcode;
+    RAM_instr = mem_read(RAM_instr, mainCPU.PC, &opcode);
+    mainCPU.PC += 1;
+
+    int len = instruction_len(opcode);
+
+    printf("Opcode: %02x\n", opcode);
+
+    byte args[2];
+    for(int i=1; i<len; i++) {
+        RAM_instr = mem_read(RAM_instr, mainCPU.PC, args + (i-1));
+        printf("Arg: %02x\n", args[i-1]);
+        mainCPU.PC += 1;
+    }
+    
+}
+
+
 char *get_cpu_state() {
-    char buff[100];
+    static char buff[200];
 
     sprintf(
             buff, 
             "\
-                A=%02x X=%02x Y=%02x \n \
-                SP=%02x PC=%04x \n \
-                P=%c%c%c%c%c%c%c \n  \
+               A=$%02x X=$%02x Y=$%02x \n\
+                SP=$%02x PC=$%04x \n\
+                P=%hhu%hhu%hhu%hhu%hhu%hhu%hhu%hhu \n\
+                  CZIDBVN \
             ",
             mainCPU.A,
             mainCPU.X,
@@ -60,5 +109,5 @@ char *get_cpu_state() {
             get_bit(mainCPU.status, 0)
             );
     
-    return strdup(buff);
+    return buff;
 }

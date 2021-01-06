@@ -11,3 +11,6 @@ typedef unsigned short addr16;
 byte readCPU(addr16 addr);
 void writeCPU(addr16 addr, byte data);
 void tick();
+char *get_cpu_state();
+void load_prg(char *filename);
+void start_bus(char *filename);

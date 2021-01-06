@@ -100,6 +100,8 @@ I should probably write something about this.
 
 ## Running code
 
+I used an assembler called xa65 to assemble the assembly language examples, the binary files can then be loaded into the emulator.
+
 When the program starts the code is loaded into a memory address specified by the first line of the .asm source code file or noted by the developer.
 
 I have noticed that on multiple online assemblers the program is loaded into the address space starting at `$6000` if nothing else is specified.

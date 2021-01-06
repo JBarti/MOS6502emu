@@ -12,6 +12,7 @@ Register RAM = {
 
 Iterator RAM_iter = &RAM;
 Iterator RAM_stack = &RAM;
+Iterator RAM_instr = &RAM;
 Iterator RAM_first = &RAM;
 
 
@@ -32,7 +33,7 @@ Register *create_register(addr16 address, byte val) {
 }
 
 
-Iterator create_iterator(Register *from) {
+Iterator create_iterator() {
     return &RAM;
 }
 
@@ -126,7 +127,7 @@ Iterator mem_read(Iterator iter, addr16 address, byte *valptr) {
 
 
 void print_memory(Register *first) {
-    Iterator iter = create_iterator(first);
+    Iterator iter = create_iterator();
 
     printf("ADDR \t VAL\n");
     foreach(iter, first) {

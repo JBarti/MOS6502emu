@@ -23,7 +23,7 @@ struct _register {
 
 
 Register *create_register(addr16 address, byte val);
-Iterator create_iterator(Register *from);
+Iterator create_iterator();
 Iterator mem_write(Iterator iter, addr16 address, byte val);
 Iterator mem_read(Iterator iter, addr16 address, byte *valptr);
 void print_memory(Register *first);

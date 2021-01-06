@@ -1,7 +1,8 @@
 #include<ncurses.h>
-#include<string.h>
 #include<stdlib.h>
+#include<stdio.h>
 
+#include"./include/display.h"
 #include"./include/ram.h"
 #include"./include/bus.h"
 
@@ -28,7 +29,7 @@ void show_RAM_util(int index, byte val, int **rowptr, int **colptr) {
     static int col = 1;
     static int row = 0;
     
-    col = index % MAX_MEM_COLS * 3 + 9;
+    col = (index % MAX_MEM_COLS) * 3 + 9;
     row += (index % MAX_MEM_COLS) == 0;
 
     if(index % MAX_MEM_COLS == 0) {
@@ -62,11 +63,11 @@ void show_RAM(byte move_opt) {
     for(int i=(page-1)*PAGE_SIZE; i<page*PAGE_SIZE; i++) {
         byte val;
         RAM_iter = mem_read(RAM_iter, i, &val);
-        show_RAM_util(i, RAM_iter->val, &rowptr, &colptr);
+        show_RAM_util(i, val, &rowptr, &colptr);
     }
 
-    *rowptr = 0;
     *colptr = 1;
+    *rowptr = 0;
 
     wrefresh(RAM_WIN);
 }
@@ -94,8 +95,9 @@ WINDOW *create_win_stat(int max_rows, int max_cols) {
 
 
 WINDOW *create_win_CPU(int max_rows, int max_cols) {
-    WINDOW *win = newwin(max_rows-1, max_cols/2, 0, max_cols/2);
+    WINDOW *win = newwin(max_rows/4, max_cols/2, 0, max_cols/2);
     box(win, 0, 0);
+    mvwprintw(win, 0, 1, "CPU display");
     refresh();
     wrefresh(win);
 
@@ -103,10 +105,21 @@ WINDOW *create_win_CPU(int max_rows, int max_cols) {
 }
 
 void show_key_press(char key){
-    werase(STAT_WIN);
+    wmove(STAT_WIN, 0, COLS-4);
+    wclrtoeol(STAT_WIN);
     mvwprintw(STAT_WIN, 0, COLS-3, &key);
     refresh();
     wrefresh(STAT_WIN);
+}
+
+
+void show_CPU_stat() {
+    werase(CPU_WIN);
+    mvwprintw(CPU_WIN, 3, 1, get_cpu_state());
+    box(CPU_WIN, 0, 0);
+    mvwprintw(CPU_WIN, 0, 1, "CPU display");
+    refresh();
+    wrefresh(CPU_WIN);
 }
     
 
@@ -127,11 +140,14 @@ void key_press(char key) {
     }
 }
 
+
 int main() {
-    ROOT_WIN = initscr();
-    cbreak(); //Stop buffering of typed characters by TTY
-    noecho(); //Stop echoing of typed characters
-    curs_set(0); //Hide the cursor from the screen
+    newterm(NULL, stderr, stdin);
+    ROOT_WIN = stdscr;
+    cbreak(); // Stop buffering of typed characters by TTY
+    noecho(); // Stop echoing of typed characters
+    curs_set(0); // Hide the cursor from the screen
+    start_bus("./tests/test1.bin");
     
     getmaxyx(ROOT_WIN, ROWS, COLS);
 
@@ -140,6 +156,8 @@ int main() {
 
     STAT_WIN = create_win_stat(ROWS, COLS);
     CPU_WIN = create_win_CPU(ROWS, COLS);
+    create_win_stdout(ROWS, COLS);
+    show_CPU_stat();
 
     char key;
     while(1) {

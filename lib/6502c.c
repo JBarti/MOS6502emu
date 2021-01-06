@@ -23,6 +23,21 @@ CPU mainCPU = {
 void initCPU(byte (*readbus)(addr16), void (*writebus)(addr16, byte)) {
     mainCPU.readbus = readbus;
     mainCPU.writebus = writebus;
+
+    mainCPU.A=0x00;
+    mainCPU.X=0x00;
+    mainCPU.Y=0x00;
+
+   mainCPU.SP=STACK_END;
+   mainCPU.PC=0x0000;
+
+   mainCPU.status=0b00000000;
+
+   mainCPU.pullstack=stack_pull;
+   mainCPU.pushstack=stack_push;
+
+   mainCPU.readbus=NULL;
+   mainCPU.writebus=NULL;
 }
 
 

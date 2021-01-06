@@ -51,11 +51,15 @@ byte stack_pull();
 void push_PC();
 void pull_PC();
 
+//Opcode utils
+int instruction_len(byte opcode);
+
 // Opcodes
 void ADC(byte opcode, byte args[2]);
 void AND(byte opcode, byte args[2]);
 void ASL(byte opcode, byte args[2]);
 void BCC(byte opcode, byte args[2]);
+void BCS(byte opcode, byte args[2]); 
 void BEQ(byte opcode, byte args[2]); 
 void BIT(byte opcode, byte args[2]); 
 void BMI(byte opcode, byte args[2]); 
@@ -75,8 +79,38 @@ void DEC(byte opcode, byte args[2]);
 void DEX(byte opcode, byte args[2]); 
 void DEY(byte opcode, byte args[2]); 
 void EOR(byte opcode, byte args[2]); 
+void INC(byte opcode, byte args[2]); 
+void INX(byte opcode, byte args[2]); 
+void INY(byte opcode, byte args[2]); 
+void JMP(byte opcode, byte args[2]); 
+void JSR(byte opcode, byte args[2]); 
 void LDA(byte opcode, byte args[2]); 
 void LDX(byte opcode, byte args[2]); 
+void LDY(byte opcode, byte args[2]); 
+void LSR(byte opcode, byte args[2]); 
+void NOP(byte opcode, byte args[2]); 
+void ORA(byte opcode, byte args[2]); 
+void PHA(byte opcode, byte args[2]); 
+void PHP(byte opcode, byte args[2]); 
+void PLA(byte opcode, byte args[2]); 
+void PLP(byte opcode, byte args[2]); 
+void ROL(byte opcode, byte args[2]); 
+void ROR(byte opcode, byte args[2]); 
+void RTI(byte opcode, byte args[2]); 
+void RTS(byte opcode, byte args[2]); 
+void SBC(byte opcode, byte args[2]); 
+void SEC(byte opcode, byte args[2]); 
+void SED(byte opcode, byte args[2]); 
+void SEI(byte opcode, byte args[2]); 
+void STA(byte opcode, byte args[2]); 
+void STX(byte opcode, byte args[2]); 
+void STY(byte opcode, byte args[2]); 
+void TAX(byte opcode, byte args[2]); 
+void TAY(byte opcode, byte args[2]); 
+void TSX(byte opcode, byte args[2]); 
+void TXA(byte opcode, byte args[2]); 
+void TXS(byte opcode, byte args[2]); 
+void TYA(byte opcode, byte args[2]); 
 
 // Opcode utils
 byte ADC_util(byte val, byte add_opt);

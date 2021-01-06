@@ -75,13 +75,25 @@ int main() {
     printf("#################\n");
     printf("\n");
 
-    // 0x62
+    // 0x69
     mainCPU.X = 0xE9;
     initCPU(readCPU, writeCPU);
     byte vals[2] = {0x51, 0x00};
     writeCPU(0x3A, 0x04);
     writeCPU(0x3B, 0x31);
-    ADC(0x62, vals);
+    ADC(0x69, vals);
+
+
+    printf("#################\n");
+    printf("####FILE LOAD####\n");
+    printf("#################\n");
+    printf("\n");
+
+    start_bus("./tests/test1.bin");
+    tick();
+    printf("PC %04x\n", mainCPU.PC);
+    
+
 
 
     return 1;
