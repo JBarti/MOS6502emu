@@ -1,4 +1,4 @@
-# NES emulator
+
 
 For the time being we will focus on emulating the NES CPU, since I have absolutely no idea what I'm doing.
 

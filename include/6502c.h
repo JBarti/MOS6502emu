@@ -1,3 +1,5 @@
+#include<stdio.h>
+
 // Status flag positions
 #define CARRY_FLAG 6
 #define ZERO_FLAG 5
@@ -53,6 +55,7 @@ void pull_PC();
 
 //Opcode utils
 int instruction_len(byte opcode);
+void (*get_opcode_func(byte opcode))(byte opcode, byte args[2]);
 
 // Opcodes
 void ADC(byte opcode, byte args[2]);

@@ -2,9 +2,9 @@
 #include<stdlib.h>
 #include<stdio.h>
 
-#include"./include/display.h"
 #include"./include/ram.h"
 #include"./include/bus.h"
+#include"./include/display.h"
 
 #define MAX_MEM_COLS 15
 
@@ -137,6 +137,10 @@ void key_press(char key) {
         case 'h':
             show_RAM(PREV_PAGE);
             break;
+        case 'n':
+            tick();
+            show_CPU_stat();
+            break;
     }
 }
 
@@ -147,16 +151,17 @@ int main() {
     cbreak(); // Stop buffering of typed characters by TTY
     noecho(); // Stop echoing of typed characters
     curs_set(0); // Hide the cursor from the screen
+
+    getmaxyx(ROOT_WIN, ROWS, COLS);
+    create_win_stdout(ROWS, COLS);
+
     start_bus("./tests/test1.bin");
     
-    getmaxyx(ROOT_WIN, ROWS, COLS);
-
     RAM_WIN = create_win_RAM(ROWS, COLS);
     show_RAM(CURR_PAGE);
 
     STAT_WIN = create_win_stat(ROWS, COLS);
     CPU_WIN = create_win_CPU(ROWS, COLS);
-    create_win_stdout(ROWS, COLS);
     show_CPU_stat();
 
     char key;

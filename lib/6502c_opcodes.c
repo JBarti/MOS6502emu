@@ -1,5 +1,5 @@
 #include"../include/6502c.h"
-#include<stdio.h>
+#include"../include/display.h"
 
 // Unfinished: JSR, BRK
 
@@ -33,12 +33,12 @@ void ADC(byte opcode, byte args[2]) { // Add with carry
             val = indirect_y(args, &val_addr);
             break;
         default:
-            printf("Unrecognized opcode for ADC %02x\n", opcode);
+            displ_print_opcode("Unrecognized opcode for ADC %02x\n", opcode);
             return;
     }
 
     ADC_util(val, ADD_POSITIVE);
-    printf("STATUS: %02x\n", mainCPU.status);
+    displ_print_opcode("STATUS: %02x\n", mainCPU.status);
 }
 
 
@@ -72,7 +72,7 @@ void AND(byte opcode, byte args[2]) { // Logical AND
             val = indirect_y(args, &val_addr);
             break;
         default:
-            printf("Unrecognized opcode for AND %02x\n", opcode);
+            displ_print_opcode("Unrecognized opcode for AND %02x\n", opcode);
             return;
     }
 
@@ -102,7 +102,7 @@ void ASL(byte opcode, byte args[2]) { // Arytmetic shift left
             val = abs_x(args, &val_addr);
             break;
         default:
-            printf("Unrecognized opcode for ASL %02x\n", opcode);
+            displ_print_opcode("Unrecognized opcode for ASL %02x\n", opcode);
             return;
     }
 
@@ -112,7 +112,7 @@ void ASL(byte opcode, byte args[2]) { // Arytmetic shift left
 
 void BCC(byte opcode, byte args[2]) { // Branch if carry clear
     if(opcode != 0x90) {
-        printf("Unrecognized opcode for BCC %02x\n", opcode);
+        displ_print_opcode("Unrecognized opcode for BCC %02x\n", opcode);
         return;
     }
 
@@ -123,7 +123,7 @@ void BCC(byte opcode, byte args[2]) { // Branch if carry clear
 
 void BCS(byte opcode, byte args[2]) { // Branch if carry set
     if(opcode != 0xb0) {
-        printf("Unrecognized opcode for BCS %02x\n", opcode);
+        displ_print_opcode("Unrecognized opcode for BCS %02x\n", opcode);
         return;
     }
     
@@ -134,7 +134,7 @@ void BCS(byte opcode, byte args[2]) { // Branch if carry set
 
 void BEQ(byte opcode, byte args[2]) { // Branch if equal
     if(opcode != 0xf0) {
-        printf("Unrecognized opcode for BEQ %02x\n", opcode);
+        displ_print_opcode("Unrecognized opcode for BEQ %02x\n", opcode);
         return;
     }
 
@@ -153,7 +153,7 @@ void BIT(byte opcode, byte args[2]) { // Bit test
         case 0x2c: // Absolute
             val = absolute(args, &val_addr);
         default:
-            printf("Unrecognized opcode for BIT %02x\n", opcode);
+            displ_print_opcode("Unrecognized opcode for BIT %02x\n", opcode);
             return;
     }  
 
@@ -163,7 +163,7 @@ void BIT(byte opcode, byte args[2]) { // Bit test
 
 void BMI(byte opcode, byte args[2]) { // Branch if minus
     if(opcode != 0x30) {
-        printf("Unrecognized opcode for BMI %02x\n", opcode);
+        displ_print_opcode("Unrecognized opcode for BMI %02x\n", opcode);
         return;
     }
 
@@ -174,7 +174,7 @@ void BMI(byte opcode, byte args[2]) { // Branch if minus
 
 void BNE(byte opcode, byte args[2]) { // Branch if not equal
     if(opcode != 0xd0) {
-        printf("Unrecognized opcode for BNE %02x\n", opcode);
+        displ_print_opcode("Unrecognized opcode for BNE %02x\n", opcode);
         return;
     }
 
@@ -185,7 +185,7 @@ void BNE(byte opcode, byte args[2]) { // Branch if not equal
 
 void BPL(byte opcode, byte args[2]) { // Branch if positive
     if(opcode != 0x10) {
-        printf("Unrecognized opcode for BPL %02x\n", opcode);
+        displ_print_opcode("Unrecognized opcode for BPL %02x\n", opcode);
         return;
     } 
 
@@ -196,7 +196,7 @@ void BPL(byte opcode, byte args[2]) { // Branch if positive
 
 void BRK(byte opcode, byte args[2]) { // Force interupt
     if(opcode != 0x00) {
-        printf("Unrecognized opcode for BRK %02x\n", opcode);
+        displ_print_opcode("Unrecognized opcode for BRK %02x\n", opcode);
         return; 
     }
 
@@ -213,7 +213,7 @@ void BRK(byte opcode, byte args[2]) { // Force interupt
 
 void BVC(byte opcode, byte args[2]) { // Branch if overflow clear
     if(opcode != 0x50){
-        printf("Unrecognized opcode for BVC %02x\n", opcode);
+        displ_print_opcode("Unrecognized opcode for BVC %02x\n", opcode);
         return;
     }
 
@@ -224,7 +224,7 @@ void BVC(byte opcode, byte args[2]) { // Branch if overflow clear
 
 void BVS(byte opcode, byte args[2]) { // Branch if overflow set
     if(opcode != 0x70) {
-        printf("Unrecognized opcode for BVS %02x\n", opcode);
+        displ_print_opcode("Unrecognized opcode for BVS %02x\n", opcode);
         return;
     }
 
@@ -235,7 +235,7 @@ void BVS(byte opcode, byte args[2]) { // Branch if overflow set
 
 void CLC(byte opcode, byte args[2]) { // Clear carry flag
     if(opcode != 0x18) {
-        printf("Unrecognized opcode for CLC %02x\n", opcode);
+        displ_print_opcode("Unrecognized opcode for CLC %02x\n", opcode);
         return;
     }
 
@@ -245,7 +245,7 @@ void CLC(byte opcode, byte args[2]) { // Clear carry flag
 
 void CLD(byte opcode, byte args[2]) { // Clear decimal mode
     if(opcode != 0xd8) {
-        printf("Unrecognized opcode for CLD %02x\n", opcode);
+        displ_print_opcode("Unrecognized opcode for CLD %02x\n", opcode);
         return;
     }
 
@@ -255,7 +255,7 @@ void CLD(byte opcode, byte args[2]) { // Clear decimal mode
 
 void CLI(byte opcode, byte args[2]) { // Clear interrupt disable
     if(opcode != 0x58){
-        printf("Unrecognized opcode for CLI %02x\n", opcode);
+        displ_print_opcode("Unrecognized opcode for CLI %02x\n", opcode);
         return;
     }
 
@@ -265,7 +265,7 @@ void CLI(byte opcode, byte args[2]) { // Clear interrupt disable
 
 void CLV(byte opcode, byte args[2]) { // Clear overflow flag
     if(opcode != 0xb8) {
-        printf("Unrecognized opcode for CLV %02x\n", opcode);
+        displ_print_opcode("Unrecognized opcode for CLV %02x\n", opcode);
         return;
     }
 
@@ -303,7 +303,7 @@ void CMP(byte opcode, byte args[2]) { // Compare
             val = indirect_y(args, &val_addr);
             break;
         default:
-            printf("Unrecognized opcode for CMP %02x\n", opcode);
+            displ_print_opcode("Unrecognized opcode for CMP %02x\n", opcode);
             return;
     }
 
@@ -326,7 +326,7 @@ void CPX(byte opcode, byte args[2]) { // Compare X register
             val = absolute(args, &val_addr);
             break;
         default:
-            printf("Unrecognized opcode for CPX %02x\n", opcode);
+            displ_print_opcode("Unrecognized opcode for CPX %02x\n", opcode);
             return;
     }
 
@@ -349,7 +349,7 @@ void CPY(byte opcode, byte args[2]) { // Compare Y register
             val = absolute(args, &val_addr);
             break;
         default:
-            printf("Unrecognized opcode for CPY %02x\n", opcode);
+            displ_print_opcode("Unrecognized opcode for CPY %02x\n", opcode);
             return;
     }
 
@@ -375,7 +375,7 @@ void DEC(byte opcode, byte args[2]) { // Decrement memory
             val = abs_x(args, &val_addr);
             break;
         default:
-            printf("Unrecognized opcode for DEC %02x\n", opcode);
+            displ_print_opcode("Unrecognized opcode for DEC %02x\n", opcode);
             return;
     }
 
@@ -388,7 +388,7 @@ void DEC(byte opcode, byte args[2]) { // Decrement memory
 
 void DEX(byte opcode, byte args[2]) { // Decrement X register
     if(opcode != 0xca) {
-        printf("Unrecognized opcode for DEX %02x\n", opcode);
+        displ_print_opcode("Unrecognized opcode for DEX %02x\n", opcode);
         return;
     } 
 
@@ -401,7 +401,7 @@ void DEX(byte opcode, byte args[2]) { // Decrement X register
 
 void DEY(byte opcode, byte args[2]) { // Decrement Y register
     if(opcode != 0x88) {
-        printf("Unrecognized opcode for DEY %02x\n", opcode);
+        displ_print_opcode("Unrecognized opcode for DEY %02x\n", opcode);
         return;
     }
 
@@ -442,7 +442,7 @@ void EOR(byte opcode, byte args[2]) { // Exclusive OR
             val = indirect_y(args, &val_addr);
             break;
         default:
-            printf("Unrecognized opcode for EOR %02x\n", opcode);
+            displ_print_opcode("Unrecognized opcode for EOR %02x\n", opcode);
             return;
     }
 
@@ -468,7 +468,7 @@ void INC(byte opcode, byte args[2]) { // Increment memory
             val = abs_x(args, &val_addr);
             break;
         default:
-            printf("Unrecognized opcode for INC %02x\n", opcode);
+            displ_print_opcode("Unrecognized opcode for INC %02x\n", opcode);
             return;
     }
 
@@ -481,7 +481,7 @@ void INC(byte opcode, byte args[2]) { // Increment memory
 
 void INX(byte opcode, byte args[2]) { // Increment X register
     if(opcode != 0xe8) {
-        printf("Unrecognized opcode for INX %02x\n", opcode);
+        displ_print_opcode("Unrecognized opcode for INX %02x\n", opcode);
         return;
     } 
 
@@ -494,7 +494,7 @@ void INX(byte opcode, byte args[2]) { // Increment X register
 
 void INY(byte opcode, byte args[2]) { // Increment Y register
     if(opcode != 0xc8) {
-        printf("Unrecognized opcode for INY %02x\n", opcode);
+        displ_print_opcode("Unrecognized opcode for INY %02x\n", opcode);
         return;
     }
 
@@ -522,7 +522,7 @@ void JMP(byte opcode, byte args[2]) { // Jump
 
 void JSR(byte opcode, byte args[2]) { // Jump to subroutine
     if(opcode != 0x20) {
-        printf("Unrecognized opcode for JSR %02x\n", opcode);
+        displ_print_opcode("Unrecognized opcode for JSR %02x\n", opcode);
         return;
     }
 
@@ -561,7 +561,7 @@ void LDA(byte opcode, byte args[2]) { // Load accumulator
             val = indirect_y(args, &val_addr);
             break;
         default:
-            printf("Unrecognized opcode for LDA %02x\n", opcode);
+            displ_print_opcode("Unrecognized opcode for LDA %02x\n", opcode);
             return;
     }
 
@@ -590,7 +590,7 @@ void LDX(byte opcode, byte args[2]) { // Load X register
             val = abs_y(args, &val_addr);
             break;
         default:
-            printf("Unrecognized opcode for LDX %02x\n", opcode);
+            displ_print_opcode("Unrecognized opcode for LDX %02x\n", opcode);
             return;
     }
 
@@ -619,7 +619,7 @@ void LDY(byte opcode, byte args[2]) { // Load Y register
             val = abs_x(args, &val_addr);
             break;
         default:
-            printf("Unrecognized opcode for LDY %02x\n", opcode);
+            displ_print_opcode("Unrecognized opcode for LDY %02x\n", opcode);
             return;
     }
 
@@ -648,7 +648,7 @@ void LSR(byte opcode, byte args[2]) { // Logical shift right
             val = abs_x(args, &val_addr);
             break;
         default:
-            printf("Unrecognized opcode for LSR %02x\n", opcode);
+            displ_print_opcode("Unrecognized opcode for LSR %02x\n", opcode);
             return;
     }
 
@@ -658,7 +658,7 @@ void LSR(byte opcode, byte args[2]) { // Logical shift right
 
 void NOP(byte opcode, byte args[2]) { // No operation
     if(opcode != 0xea) {
-        printf("Unrecognized opcode for NOP %02x\n", opcode);
+        displ_print_opcode("Unrecognized opcode for NOP %02x\n", opcode);
         return;
     }
 }
@@ -694,7 +694,7 @@ void ORA(byte opcode, byte args[2]) { // Logical inclusive OR
             val = indirect_y(args, &val_addr);
             break;
         default:
-            printf("Unrecognized opcode for ORA %02x\n", opcode);
+            displ_print_opcode("Unrecognized opcode for ORA %02x\n", opcode);
             return;
     }
 
@@ -704,7 +704,7 @@ void ORA(byte opcode, byte args[2]) { // Logical inclusive OR
 
 void PHA(byte opcode, byte args[2]) { // Push accumulator to stack
     if(opcode != 0x48) {
-        printf("Unrecognized opcode for PHA %02x\n", opcode);
+        displ_print_opcode("Unrecognized opcode for PHA %02x\n", opcode);
         return;
     }
 
@@ -714,7 +714,7 @@ void PHA(byte opcode, byte args[2]) { // Push accumulator to stack
 
 void PHP(byte opcode, byte args[2]) { // Push processor status to stack
     if(opcode != 0x08) {
-        printf("Unrecognized opcode for PHP %02x\n", opcode);
+        displ_print_opcode("Unrecognized opcode for PHP %02x\n", opcode);
         return;
     }
 
@@ -724,7 +724,7 @@ void PHP(byte opcode, byte args[2]) { // Push processor status to stack
 
 void PLA(byte opcode, byte args[2]) { // Pull stack into accumulator
     if(opcode != 0x68) {
-        printf("Unrecognized opcode for PLA %02x\n", opcode);
+        displ_print_opcode("Unrecognized opcode for PLA %02x\n", opcode);
         return;
     }
 
@@ -736,7 +736,7 @@ void PLA(byte opcode, byte args[2]) { // Pull stack into accumulator
 
 void PLP(byte opcode, byte args[2]) { // Pull stack into status
     if(opcode != 0x28) {
-        printf("Unrecognized opcode for PLP %02x\n", opcode);
+        displ_print_opcode("Unrecognized opcode for PLP %02x\n", opcode);
         return;
     }
 
@@ -765,7 +765,7 @@ void ROL(byte opcode, byte args[2]) { // Rotate left
             val = abs_x(args, &val_addr);
             break;
         default:
-            printf("Unrecognized opcode for ROL %02x\n", opcode);
+            displ_print_opcode("Unrecognized opcode for ROL %02x\n", opcode);
             return;
     }
 
@@ -794,7 +794,7 @@ void ROR(byte opcode, byte args[2]) { // Rotate right
             val = abs_x(args, &val_addr);
             break;
         default:
-            printf("Unrecognized opcode for ROR %02x\n", opcode);
+            displ_print_opcode("Unrecognized opcode for ROR %02x\n", opcode);
             return;
     }
 
@@ -804,7 +804,7 @@ void ROR(byte opcode, byte args[2]) { // Rotate right
 
 void RTI(byte opcode, byte args[2]) { // Return from interrupt
     if(opcode != 0x40) {
-        printf("Unrecognized opcode for RTI %02x\n", opcode);
+        displ_print_opcode("Unrecognized opcode for RTI %02x\n", opcode);
         return;
     }
 
@@ -816,7 +816,7 @@ void RTI(byte opcode, byte args[2]) { // Return from interrupt
 void RTS(byte opcode, byte args[2]) { // Return from subroutine
     // TODO: should probably be tested
     if(opcode != 0x60) {
-        printf("Unrecognized opcode for RTS %02x\n", opcode);
+        displ_print_opcode("Unrecognized opcode for RTS %02x\n", opcode);
         return;
     }
 
@@ -854,7 +854,7 @@ void SBC(byte opcode, byte args[2]) { // Subtract with carry
             val = indirect_y(args, &val_addr);
             break;
         default:
-            printf("Unrecognized opcode for SBC %02x\n", opcode);
+            displ_print_opcode("Unrecognized opcode for SBC %02x\n", opcode);
             return;
     }
 
@@ -865,7 +865,7 @@ void SBC(byte opcode, byte args[2]) { // Subtract with carry
 
 void SEC(byte opcode, byte args[2]) { // Set carry flag
     if(opcode != 0x38) {
-        printf("Unrecognized opcode for SEC %02x\n", opcode);
+        displ_print_opcode("Unrecognized opcode for SEC %02x\n", opcode);
         return;
     }
 
@@ -875,7 +875,7 @@ void SEC(byte opcode, byte args[2]) { // Set carry flag
 
 void SED(byte opcode, byte args[2]) { // Set decimal flag
     if(opcode != 0xf8) {
-        printf("Unrecognized opcode for SED %02x\n", opcode);
+        displ_print_opcode("Unrecognized opcode for SED %02x\n", opcode);
         return;
     }
     
@@ -885,7 +885,7 @@ void SED(byte opcode, byte args[2]) { // Set decimal flag
 
 void SEI(byte opcode, byte args[2]) { // Set interrupt disable
     if(opcode != 0x78) {
-        printf("Unrecognized opcode for SEI %02x\n", opcode);
+        displ_print_opcode("Unrecognized opcode for SEI %02x\n", opcode);
         return;
     }
 
@@ -919,7 +919,7 @@ void STA(byte opcode, byte args[2]) { // Store accumulator
             indirect_y(args, &val_addr);
             break;
         default:
-            printf("Unrecognized opcode for STA %02x\n", opcode);
+            displ_print_opcode("Unrecognized opcode for STA %02x\n", opcode);
             return;
     }
 
@@ -940,7 +940,7 @@ void STX(byte opcode, byte args[2]) { // Store X register
             absolute(args, &val_addr);
             break;
         default:
-            printf("Unrecognized opcode for STX %02x\n", opcode);
+            displ_print_opcode("Unrecognized opcode for STX %02x\n", opcode);
             return;
     }
 
@@ -961,7 +961,7 @@ void STY(byte opcode, byte args[2]) { // Store Y register
             absolute(args, &val_addr);
             break;
         default:
-            printf("Unrecognized opcode for STY %02x\n", opcode);
+            displ_print_opcode("Unrecognized opcode for STY %02x\n", opcode);
             return;
     }
 
@@ -971,7 +971,7 @@ void STY(byte opcode, byte args[2]) { // Store Y register
 
 void TAX(byte opcode, byte args[2]) { // Transfer accumulator to Y
     if(opcode != 0xaa) {
-        printf("Unrecognized opcode for TAX %02x\n", opcode);
+        displ_print_opcode("Unrecognized opcode for TAX %02x\n", opcode);
         return;
     }
 
@@ -983,7 +983,7 @@ void TAX(byte opcode, byte args[2]) { // Transfer accumulator to Y
 
 void TAY(byte opcode, byte args[2]) { // Transfer accumulator to Y
     if(opcode != 0xa8) {
-        printf("Unrecognized opcode for TAY %02x\n", opcode);
+        displ_print_opcode("Unrecognized opcode for TAY %02x\n", opcode);
         return;
     }
 
@@ -995,7 +995,7 @@ void TAY(byte opcode, byte args[2]) { // Transfer accumulator to Y
 
 void TSX(byte opcode, byte args[2]) { // Transfer stack pointer to X
     if(opcode != 0xba) {
-        printf("Unrecognized opcode for TSX %02x\n", opcode);
+        displ_print_opcode("Unrecognized opcode for TSX %02x\n", opcode);
         return;
     }
     
@@ -1007,7 +1007,7 @@ void TSX(byte opcode, byte args[2]) { // Transfer stack pointer to X
 
 void TXA(byte opcode, byte args[2]) { // Transfer X to accumulator
     if(opcode != 0x8a) {
-        printf("Unrecognized opcode for TXA %02x\n", opcode);
+        displ_print_opcode("Unrecognized opcode for TXA %02x\n", opcode);
         return;
     }
 
@@ -1019,7 +1019,7 @@ void TXA(byte opcode, byte args[2]) { // Transfer X to accumulator
 
 void TXS(byte opcode, byte args[2]) { // Transfer X to stack pointer
     if(opcode != 0x9a) {
-        printf("Unrecognized opcode for TXS %02x\n", opcode);
+        displ_print_opcode("Unrecognized opcode for TXS %02x\n", opcode);
         return;
     }
 
@@ -1029,7 +1029,7 @@ void TXS(byte opcode, byte args[2]) { // Transfer X to stack pointer
 
 void TYA(byte opcode, byte args[2]) { // Transfer Y to accumulator
     if(opcode != 0x98) {
-        printf("Unrecognized opcode for TYA %02x\n", opcode);
+        displ_print_opcode("Unrecognized opcode for TYA %02x\n", opcode);
         return;
     }
 

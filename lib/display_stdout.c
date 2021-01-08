@@ -8,6 +8,7 @@ WINDOW *create_win_stdout(int max_rows, int max_cols) {
             max_cols/2
             );
 
+    wprintw(win, "\n");
     box(win, 0, 0);
     scrollok(win, 1);
     refresh();
@@ -19,8 +20,19 @@ WINDOW *create_win_stdout(int max_rows, int max_cols) {
 
 
 void displ_print(char *msg) {
+    wprintw(STDOUT_WIN, " ");
     wprintw(STDOUT_WIN, msg);
     box(STDOUT_WIN, 0, 0);
     refresh();
     wrefresh(STDOUT_WIN);
 }
+
+
+void displ_print_opcode(char *msg, byte fmt) {
+    wprintw(STDOUT_WIN, " ");
+    wprintw(STDOUT_WIN, msg, fmt);
+    box(STDOUT_WIN, 0, 0);
+    refresh();
+    wrefresh(STDOUT_WIN);
+}
+

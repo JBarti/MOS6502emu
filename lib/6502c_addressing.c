@@ -1,5 +1,5 @@
+#include"../include/display.h"
 #include"../include/6502c.h"
-#include<stdio.h>
 
 
 byte immediate(byte args[2]) {

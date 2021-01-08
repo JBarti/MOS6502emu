@@ -1,5 +1,4 @@
 #include"../include/6502c.h"
-#include<stdio.h>
 
 
 addr16 le_to_be(byte lsb, byte msb) {  // little endian to big endian

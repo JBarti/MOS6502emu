@@ -1,9 +1,10 @@
-#include<stdio.h>
 #include<string.h>
+#include<stdio.h>
 
+#include"../include/6502c.h"
 #include"../include/bus.h"
 #include"../include/ram.h"
-#include"../include/6502c.h"
+#include"../include/display.h"
 
 extern Iterator RAM_iter;
 extern Iterator RAM_first;
@@ -54,6 +55,7 @@ void start_bus(char *filename) {
     initCPU(readCPU, writeCPU);
     mainCPU.PC = 0x0600; // Starting address of program counter
     load_prg(filename);
+    displ_print("Program loaded\n");
     // load program into memory
     // create_execution_tree
 }
@@ -71,17 +73,20 @@ void tick() {
 
     int len = instruction_len(opcode);
 
-    printf("Opcode: %02x\n", opcode);
 
     byte args[2];
     for(int i=1; i<len; i++) {
         RAM_instr = mem_read(RAM_instr, mainCPU.PC, args + (i-1));
-        printf("Arg: %02x\n", args[i-1]);
         mainCPU.PC += 1;
     }
+
+    get_opcode_func(opcode)(opcode, args);
+    displ_print_opcode("EXECUTED: %02x\n", opcode);
+    displ_print_opcode("ARGA LEN: %d\n", len);
+    displ_print_opcode("ARG 0: %02x\n", args[0]);
+    displ_print_opcode("ARG 1: %02x\n", args[1]);
     
 }
-
 
 char *get_cpu_state() {
     static char buff[200];
@@ -92,7 +97,7 @@ char *get_cpu_state() {
                A=$%02x X=$%02x Y=$%02x \n\
                 SP=$%02x PC=$%04x \n\
                 P=%hhu%hhu%hhu%hhu%hhu%hhu%hhu%hhu \n\
-                  CZIDBVN \
+                  0CZIDBVN \
             ",
             mainCPU.A,
             mainCPU.X,
