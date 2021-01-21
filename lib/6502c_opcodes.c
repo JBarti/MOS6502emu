@@ -1,7 +1,6 @@
 #include"../include/6502c.h"
 #include"../include/display.h"
 
-// Unfinished: JSR, BRK
 
 void ADC(byte opcode, byte args[2]) { // Add with carry
     byte val;
@@ -9,7 +8,7 @@ void ADC(byte opcode, byte args[2]) { // Add with carry
 
     switch(opcode) {
         case 0x69: // Immediate 
-            val = immediate(args);
+            val = immediate(args, &val_addr);
             break;
         case 0x65: // Zero Page
             val = zero_page(args, &val_addr);
@@ -48,7 +47,7 @@ void AND(byte opcode, byte args[2]) { // Logical AND
 
     switch(opcode) {
         case 0x29: // Immediate 
-            val = immediate(args);
+            val = immediate(args, &val_addr);
             break;
         case 0x25: // Zero Page
             val = zero_page(args, &val_addr);
@@ -116,8 +115,9 @@ void BCC(byte opcode, byte args[2]) { // Branch if carry clear
         return;
     }
 
+    addr16 val_addr;
     if(!get_status_flag(CARRY_FLAG))
-        mainCPU.PC += relative(args);
+        mainCPU.PC += (sbyte)relative(args, &val_addr);
 }
 
 
@@ -127,8 +127,9 @@ void BCS(byte opcode, byte args[2]) { // Branch if carry set
         return;
     }
     
+    addr16 val_addr;
     if(get_status_flag(CARRY_FLAG))
-        mainCPU.PC += relative(args);
+        mainCPU.PC += (sbyte)relative(args, &val_addr);
 }
 
 
@@ -138,8 +139,9 @@ void BEQ(byte opcode, byte args[2]) { // Branch if equal
         return;
     }
 
+    addr16 val_addr;
     if(get_status_flag(ZERO_FLAG))
-        mainCPU.PC += relative(args);
+        mainCPU.PC += (sbyte)relative(args, &val_addr);
 }
 
 
@@ -167,8 +169,9 @@ void BMI(byte opcode, byte args[2]) { // Branch if minus
         return;
     }
 
+    addr16 val_addr;
     if(get_status_flag(NEGATIVE_FLAG))
-        mainCPU.PC += relative(args);
+        mainCPU.PC += (sbyte)relative(args, &val_addr);
 }
 
 
@@ -178,8 +181,9 @@ void BNE(byte opcode, byte args[2]) { // Branch if not equal
         return;
     }
 
+    addr16 val_addr;
     if(!get_status_flag(ZERO_FLAG))
-        mainCPU.PC += relative(args);
+        mainCPU.PC += (sbyte)relative(args, &val_addr);
 }
 
 
@@ -189,8 +193,9 @@ void BPL(byte opcode, byte args[2]) { // Branch if positive
         return;
     } 
 
+    addr16 val_addr;
     if(!get_status_flag(NEGATIVE_FLAG))
-        mainCPU.PC += relative(args);
+        mainCPU.PC += (sbyte)relative(args, &val_addr);
 }
 
 
@@ -217,8 +222,9 @@ void BVC(byte opcode, byte args[2]) { // Branch if overflow clear
         return;
     }
 
+    addr16 val_addr;
     if(!get_status_flag(OVERFLOW_FLAG))
-        mainCPU.PC += relative(args);
+        mainCPU.PC += (sbyte)relative(args, &val_addr);
 }
 
 
@@ -228,8 +234,9 @@ void BVS(byte opcode, byte args[2]) { // Branch if overflow set
         return;
     }
 
+    addr16 val_addr;
     if(get_status_flag(OVERFLOW_FLAG))
-        mainCPU.PC += relative(args);
+        mainCPU.PC += (sbyte)relative(args, &val_addr);
 }
 
 
@@ -279,7 +286,7 @@ void CMP(byte opcode, byte args[2]) { // Compare
 
     switch(opcode) {
         case 0xc9: // Immediate 
-            val = immediate(args);
+            val = immediate(args, &val_addr);
             break;
         case 0xc5: // Zero Page
             val = zero_page(args, &val_addr);
@@ -317,7 +324,7 @@ void CPX(byte opcode, byte args[2]) { // Compare X register
 
     switch(opcode) {
         case 0xe0: // Immediate
-            val = immediate(args);
+            val = immediate(args, &val_addr);
             break;
         case 0xe4: // Zero Page
             val = zero_page(args, &val_addr);
@@ -340,7 +347,7 @@ void CPY(byte opcode, byte args[2]) { // Compare Y register
 
     switch(opcode) {
         case 0xc0: // Immediate
-            val = immediate(args);
+            val = immediate(args, &val_addr);
             break;
         case 0xc4: // Zero Page
             val = zero_page(args, &val_addr);
@@ -418,7 +425,7 @@ void EOR(byte opcode, byte args[2]) { // Exclusive OR
 
     switch(opcode) {
         case 0x49: // Immediate
-            val = immediate(args);
+            val = immediate(args, &val_addr);
             break;
         case 0x45: // Zero Page
             val = zero_page(args, &val_addr);
@@ -537,7 +544,7 @@ void LDA(byte opcode, byte args[2]) { // Load accumulator
 
     switch(opcode) {
         case 0xa9: // Immediate 
-            val = immediate(args);
+            val = immediate(args, &val_addr);
             break;
         case 0xa5: // Zero Page
             val = zero_page(args, &val_addr);
@@ -575,7 +582,7 @@ void LDX(byte opcode, byte args[2]) { // Load X register
 
     switch(opcode) {
         case 0xa2: // Immediate 
-            val = immediate(args);
+            val = immediate(args, &val_addr);
             break;
         case 0xa6: // Zero Page
             val = zero_page(args, &val_addr);
@@ -604,7 +611,7 @@ void LDY(byte opcode, byte args[2]) { // Load Y register
 
     switch(opcode) {
         case 0xa0: // Immediate 
-            val = immediate(args);
+            val = immediate(args, &val_addr);
             break;
         case 0xa4: // Zero Page
             val = zero_page(args, &val_addr);
@@ -670,7 +677,7 @@ void ORA(byte opcode, byte args[2]) { // Logical inclusive OR
 
     switch(opcode) {
         case 0x09: // Immediate 
-            val = immediate(args);
+            val = immediate(args, &val_addr);
             break;
         case 0x05: // Zero Page
             val = zero_page(args, &val_addr);
@@ -830,7 +837,7 @@ void SBC(byte opcode, byte args[2]) { // Subtract with carry
 
     switch(opcode) {
         case 0xe9: // Immediate 
-            val = immediate(args);
+            val = immediate(args, &val_addr);
             break;
         case 0xe5: // Zero Page
             val = zero_page(args, &val_addr);

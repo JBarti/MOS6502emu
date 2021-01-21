@@ -15,6 +15,12 @@
 #define ADD_NEGATIVE 0
 #define ADD_POSITIVE 1
 
+#define NOT_JUMP_OP 0
+#define JUMP_OP 1
+#define BRANCH_OP 2
+#define SR_JUMP_OP 3
+#define RETURN_OP 4
+
 #define get_bit(val, pos) !!(val & (0b00000001 << pos))
 
 typedef unsigned char byte;
@@ -54,8 +60,11 @@ void push_PC();
 void pull_PC();
 
 //Opcode utils
+byte (*get_opcode_addressing(byte opcode))(byte*, addr16*);
+char *get_opcode_name(byte opcode);
 int instruction_len(byte opcode);
 void (*get_opcode_func(byte opcode))(byte opcode, byte args[2]);
+int is_opcode_jump(byte opcode);
 
 // Opcodes
 void ADC(byte opcode, byte args[2]);
@@ -116,6 +125,7 @@ void TXS(byte opcode, byte args[2]);
 void TYA(byte opcode, byte args[2]); 
 
 // Opcode utils
+byte addc(byte val1, byte val2, byte *carry);
 byte ADC_util(byte val, byte add_opt);
 byte AND_util(byte val);
 byte ASL_util(byte val);
@@ -131,15 +141,17 @@ byte ROL_util(byte val);
 byte ROR_util(byte val);
 
 // Addressing modes
-byte addc(byte val1, byte val2, byte *carry);
-byte immediate(byte args[2]);
+byte immediate(byte args[2], addr16 *val_addr);
 byte zero_page(byte args[2], addr16 *val_addr);
 byte zero_page_x(byte args[2], addr16 *val_addr);
 byte zero_page_y(byte args[2], addr16 *val_addr);
 byte absolute(byte args[2], addr16 *val_addr);
 byte abs_x(byte args[2], addr16 *val_addr);
 byte abs_y(byte args[2], addr16 *val_addr);
-void indirect(byte args[2], addr16 *val_addr);
+byte indirect(byte args[2], addr16 *val_addr);
 byte indirect_x(byte args[2], addr16 *val_addr);
 byte indirect_y(byte args[2], addr16 *val_addr);
-sbyte relative(byte args[2]);
+byte relative(byte args[2], addr16 *val_addr);
+// Used only in getting addresing name
+byte accumulator(byte args[2], addr16 *val_addr);
+byte implied(byte args[2], addr16 *val_addr); 

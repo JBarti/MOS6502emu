@@ -2,7 +2,7 @@
 #include"../include/6502c.h"
 
 
-byte immediate(byte args[2]) {
+byte immediate(byte args[2], addr16 *val_addr) {
     return args[0];
 }
 
@@ -54,13 +54,15 @@ byte abs_y(byte args[2], addr16 *val_addr) {
 }
 
 
-void indirect(byte args[2], addr16 *val_addr) {
+byte indirect(byte args[2], addr16 *val_addr) {
     byte addr1 = le_to_be(args[0], args[1]);
 
     byte addr_lsb = mainCPU.readbus(addr1);
     byte addr_msb = mainCPU.readbus(addr1 + 1);
 
     *val_addr = le_to_be(addr_lsb, addr_msb);
+
+    return 0;
 }
 
 
@@ -95,6 +97,16 @@ byte indirect_y(byte args[2], addr16 *val_addr) {
 }
 
 
-sbyte relative(byte args[2]) {
+byte relative(byte args[2], addr16 *val_addr) {
     return (sbyte)args[0];  
+}
+
+
+byte implied(byte args[2], addr16 *val_addr) {
+    return 0;
+}
+
+
+byte accumulator(byte args[2], addr16 *val_addr) {
+    return 0;
 }

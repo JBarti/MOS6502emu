@@ -1,6 +1,167 @@
 #include"../include/display.h"
 #include"../include/6502c.h"
 
+char *get_opcode_name(byte opcode) {
+    switch(opcode) {
+        case 0x69: return "ADC"; 
+        case 0x65: return "ADC";
+        case 0x75: return "ADC";
+        case 0x6D: return "ADC";
+        case 0x7D: return "ADC";
+        case 0x79: return "ADC";
+        case 0x61: return "ADC";
+        case 0x71: return "ADC";
+        case 0x29: return "AND";
+        case 0x25: return "AND";
+        case 0x35: return "AND";
+        case 0x2D: return "AND";
+        case 0x3D: return "AND";
+        case 0x39: return "AND";
+        case 0x21: return "AND";
+        case 0x31: return "AND";
+        case 0x0A: return "ASL";
+        case 0x06: return "ASL";
+        case 0x16: return "ASL";
+        case 0x0E: return "ASL";
+        case 0x1E: return "ASL";
+        case 0x90: return "BCC";
+        case 0xB0: return "BCS";
+        case 0xF0: return "BEQ";
+        case 0x24: return "BIT";
+        case 0x2C: return "BIT";
+        case 0x30: return "BMI";
+        case 0xD0: return "BNE";
+        case 0x10: return "BPL";
+        case 0x00: return "BRK";
+        case 0x50: return "BVC";
+        case 0x70: return "BVS";
+        case 0x18: return "CLC";
+        case 0xD8: return "CLD";
+        case 0x58: return "CLI";
+        case 0xB8: return "CLV";
+        case 0xC9: return "CMP";
+        case 0xC5: return "CMP";
+        case 0xD5: return "CMP";
+        case 0xCD: return "CMP";
+        case 0xDD: return "CMP";
+        case 0xD9: return "CMP";
+        case 0xC1: return "CMP";
+        case 0xD1: return "CMP";
+        case 0xE0: return "CPX";
+        case 0xE4: return "CPX";
+        case 0xEC: return "CPX";
+        case 0xC0: return "CPY";
+        case 0xC4: return "CPY";
+        case 0xCC: return "CPY";
+        case 0xC6: return "DEC";
+        case 0xD6: return "DEC";
+        case 0xCE: return "DEC";
+        case 0xDE: return "DEC";
+        case 0xCA: return "DEX";
+        case 0x88: return "DEY";
+        case 0x49: return "EOR";
+        case 0x45: return "EOR";
+        case 0x55: return "EOR";
+        case 0x4D: return "EOR";
+        case 0x5D: return "EOR";
+        case 0x59: return "EOR";
+        case 0x41: return "EOR";
+        case 0x51: return "EOR";
+        case 0xE6: return "INC";
+        case 0xF6: return "INC";
+        case 0xEE: return "INC";
+        case 0xFE: return "INC";
+        case 0xE8: return "INX";
+        case 0xC8: return "INY";
+        case 0x4C: return "JMP";
+        case 0x6C: return "JMP";
+        case 0x20: return "JSR";
+        case 0xA9: return "LDA";
+        case 0xA5: return "LDA";
+        case 0xB5: return "LDA";
+        case 0xAD: return "LDA";
+        case 0xBD: return "LDA";
+        case 0xB9: return "LDA";
+        case 0xA1: return "LDA";
+        case 0xB1: return "LDA";
+        case 0xA2: return "LDX";
+        case 0xA6: return "LDX";
+        case 0xB6: return "LDX";
+        case 0xAE: return "LDX";
+        case 0xBE: return "LDX";
+        case 0xA0: return "LDY";
+        case 0xA4: return "LDY";
+        case 0xB4: return "LDY";
+        case 0xAC: return "LDY";
+        case 0xBC: return "LDY";
+        case 0x4A: return "LSR";
+        case 0x46: return "LSR";
+        case 0x56: return "LSR";
+        case 0x4E: return "LSR";
+        case 0x5E: return "LSR";
+        case 0xEA: return "NOP";
+        case 0x09: return "ORA";
+        case 0x05: return "ORA";
+        case 0x15: return "ORA";
+        case 0x0D: return "ORA";
+        case 0x1D: return "ORA";
+        case 0x19: return "ORA";
+        case 0x01: return "ORA";
+        case 0x11: return "ORA";
+        case 0x48: return "PHA";
+        case 0x08: return "PHP";
+        case 0x68: return "PLA";
+        case 0x28: return "PLP";
+        case 0x2A: return "ROL";
+        case 0x26: return "ROL";
+        case 0x36: return "ROL";
+        case 0x2E: return "ROL";
+        case 0x3E: return "ROL";
+        case 0x6A: return "ROR";
+        case 0x66: return "ROR";
+        case 0x76: return "ROR";
+        case 0x6E: return "ROR";
+        case 0x7E: return "ROR";
+        case 0x40: return "RTI";
+        case 0x60: return "RTS";
+        case 0xE9: return "SBC";
+        case 0xE5: return "SBC";
+        case 0xF5: return "SBC";
+        case 0xED: return "SBC";
+        case 0xFD: return "SBC";
+        case 0xF9: return "SBC";
+        case 0xE1: return "SBC";
+        case 0xF1: return "SBC";
+        case 0x38: return "SEC";
+        case 0xF8: return "SED";
+        case 0x78: return "SEI";
+        case 0x85: return "STA";
+        case 0x95: return "STA";
+        case 0x8D: return "STA";
+        case 0x9D: return "STA";
+        case 0x99: return "STA";
+        case 0x81: return "STA";
+        case 0x91: return "STA";
+        case 0x86: return "STX";
+        case 0x96: return "STX";
+        case 0x8E: return "STX";
+        case 0x84: return "STY";
+        case 0x94: return "STY"; 
+        case 0x8C: return "STY"; 
+        case 0xAA: return "TAX";
+        case 0xA8: return "TAY";
+        case 0xBA: return "TSX";
+        case 0x8A: return "TXA";
+        case 0x9A: return "TXS";
+        case 0x98: return "TYA";
+        default: 
+       {
+           displ_print_opcode("Function for opcode %02x not found\n", opcode);
+           return "NONE";
+       }
+    }
+}
+
 
 void (*get_opcode_func(byte opcode))(byte opcode, byte args[2]) {
     switch(opcode) {
@@ -12,6 +173,7 @@ void (*get_opcode_func(byte opcode))(byte opcode, byte args[2]) {
         case 0x79: return ADC;
         case 0x61: return ADC;
         case 0x71: return ADC;
+        case 0x29: return AND;
         case 0x25: return AND;
         case 0x35: return AND;
         case 0x2D: return AND;
@@ -37,6 +199,7 @@ void (*get_opcode_func(byte opcode))(byte opcode, byte args[2]) {
         case 0x70: return BVS;
         case 0x18: return CLC;
         case 0xD8: return CLD;
+        case 0x58: return CLI;
         case 0xB8: return CLV;
         case 0xC9: return CMP;
         case 0xC5: return CMP;
@@ -162,9 +325,172 @@ void (*get_opcode_func(byte opcode))(byte opcode, byte args[2]) {
 }
 
 
+byte (*get_opcode_addressing(byte opcode))(byte*, addr16*) {
+    switch(opcode) {
+        case 0x69: return immediate;
+        case 0x65: return zero_page;
+        case 0x75: return zero_page_x;
+        case 0x6D: return absolute;
+        case 0x7D: return abs_x;
+        case 0x79: return abs_y;
+        case 0x61: return indirect_x;
+        case 0x71: return indirect_y;
+        case 0x29: return immediate;
+        case 0x25: return zero_page;
+        case 0x35: return zero_page_x;
+        case 0x2D: return absolute;
+        case 0x3D: return abs_x;
+        case 0x39: return abs_y;
+        case 0x21: return indirect_x;
+        case 0x31: return indirect_y;
+        case 0x0A: return accumulator;
+        case 0x06: return zero_page;
+        case 0x16: return zero_page_x;
+        case 0x0E: return absolute;
+        case 0x1E: return abs_x;
+        case 0x90: return relative;
+        case 0xB0: return relative;
+        case 0xF0: return relative;
+        case 0x24: return zero_page;
+        case 0x2C: return absolute;
+        case 0x30: return relative;
+        case 0xD0: return relative;
+        case 0x10: return relative;
+        case 0x00: return implied;
+        case 0x50: return relative;
+        case 0x70: return relative;
+        case 0x18: return implied;
+        case 0xD8: return implied;
+        case 0x58: return implied;
+        case 0xB8: return implied;
+        case 0xC9: return immediate;
+        case 0xC5: return zero_page;
+        case 0xD5: return zero_page_x;
+        case 0xCD: return absolute;
+        case 0xDD: return abs_x;
+        case 0xD9: return abs_y;
+        case 0xC1: return indirect_x;
+        case 0xD1: return indirect_y;
+        case 0xE0: return immediate;
+        case 0xE4: return zero_page;
+        case 0xEC: return absolute;
+        case 0xC0: return immediate;
+        case 0xC4: return zero_page;
+        case 0xCC: return absolute;
+        case 0xC6: return zero_page;
+        case 0xD6: return zero_page_x;
+        case 0xCE: return absolute;
+        case 0xDE: return abs_x;
+        case 0xCA: return implied;
+        case 0x88: return implied;
+        case 0x49: return immediate;
+        case 0x45: return zero_page;
+        case 0x55: return zero_page_x;
+        case 0x4D: return absolute;
+        case 0x5D: return abs_x;
+        case 0x59: return abs_y;
+        case 0x41: return indirect_x;
+        case 0x51: return indirect_y;
+        case 0xE6: return zero_page;
+        case 0xF6: return zero_page_x;
+        case 0xEE: return absolute;
+        case 0xFE: return abs_x;
+        case 0xE8: return implied;
+        case 0xC8: return implied;
+        case 0x4C: return absolute;
+        case 0x6C: return indirect;
+        case 0x20: return absolute;
+        case 0xA9: return immediate;
+        case 0xA5: return zero_page;
+        case 0xB5: return zero_page_x;
+        case 0xAD: return absolute;
+        case 0xBD: return abs_x;
+        case 0xB9: return abs_y;
+        case 0xA1: return indirect_x;
+        case 0xB1: return indirect_y;
+        case 0xA2: return immediate;
+        case 0xA6: return zero_page;
+        case 0xB6: return zero_page_y;
+        case 0xAE: return absolute;
+        case 0xBE: return abs_y;
+        case 0xA0: return immediate;
+        case 0xA4: return zero_page;
+        case 0xB4: return zero_page_x;
+        case 0xAC: return absolute;
+        case 0xBC: return abs_x;
+        case 0x4A: return accumulator;
+        case 0x46: return zero_page;
+        case 0x56: return zero_page_x;
+        case 0x4E: return absolute;
+        case 0x5E: return abs_x;
+        case 0xEA: return implied;
+        case 0x09: return immediate;
+        case 0x05: return zero_page;
+        case 0x15: return zero_page_x;
+        case 0x0D: return absolute;
+        case 0x1D: return abs_x;
+        case 0x19: return abs_y;
+        case 0x01: return indirect_x;
+        case 0x11: return indirect_y;
+        case 0x48: return implied;
+        case 0x08: return implied;
+        case 0x68: return implied;
+        case 0x28: return implied;
+        case 0x2A: return accumulator;
+        case 0x26: return zero_page;
+        case 0x36: return zero_page_x;
+        case 0x2E: return absolute;
+        case 0x3E: return abs_x;
+        case 0x6A: return accumulator;
+        case 0x66: return zero_page;
+        case 0x76: return zero_page_x;
+        case 0x6E: return absolute;
+        case 0x7E: return abs_x;
+        case 0x40: return implied;
+        case 0x60: return implied;
+        case 0xE9: return immediate;
+        case 0xE5: return zero_page;
+        case 0xF5: return zero_page_x;
+        case 0xED: return absolute;
+        case 0xFD: return abs_x;
+        case 0xF9: return abs_y;
+        case 0xE1: return indirect_x;
+        case 0xF1: return indirect_y;
+        case 0x38: return implied;
+        case 0xF8: return implied;
+        case 0x78: return implied;
+        case 0x85: return zero_page;
+        case 0x95: return zero_page_x;
+        case 0x8D: return absolute;
+        case 0x9D: return abs_x;
+        case 0x99: return abs_y;
+        case 0x81: return indirect_x;
+        case 0x91: return indirect_y;
+        case 0x86: return zero_page;
+        case 0x96: return zero_page_y;
+        case 0x8E: return absolute;
+        case 0x84: return zero_page;
+        case 0x94: return zero_page_x;
+        case 0x8C: return absolute;
+        case 0xAA: return implied;
+        case 0xA8: return implied;
+        case 0xBA: return implied;
+        case 0x8A: return implied;
+        case 0x9A: return implied;
+        case 0x98: return implied;
+        default: 
+       {
+           displ_print_opcode("Addressing mode for opcode %02x not found\n", opcode);
+           return NULL;
+       }
+    }
+}
+
+
 int instruction_len(byte opcode) {
     switch(opcode) {
-                case 0x65: return 2; 
+        case 0x69: return 2; 
+        case 0x65: return 2; 
         case 0x75: return 2;
         case 0x6D: return 3;
         case 0x7D: return 3;
@@ -211,7 +537,7 @@ int instruction_len(byte opcode) {
         case 0xE4: return 2;
         case 0xEC: return 3;
         case 0xC0: return 2;
-        case 0xC: return 2;
+        case 0xC4: return 2;
         case 0xCC: return 3;
         case 0xC6: return 2;
         case 0xD6: return 2;
@@ -320,4 +646,32 @@ int instruction_len(byte opcode) {
            return 0;
        }
     }
+}
+
+
+/* Returns:
+    0 if opcode is not a jump operation
+    1 if opcode is a regular jump
+    2 if opcode is a branch
+    3 if opcode is a subroutine jump
+    4 if opcode is a return
+*/
+int is_opcode_jump(byte opcode) {
+    switch(opcode) {
+        case 0x90: return BRANCH_OP;
+        case 0xB0: return BRANCH_OP;
+        case 0xF0: return BRANCH_OP;
+        case 0x30: return BRANCH_OP;
+        case 0xD0: return BRANCH_OP;
+        case 0x10: return BRANCH_OP;
+        case 0x50: return BRANCH_OP;
+        case 0x70: return BRANCH_OP;
+        case 0x4C: return JUMP_OP;
+        case 0x6C: return JUMP_OP;
+        case 0x20: return SR_JUMP_OP;
+        case 0x40: return RETURN_OP;
+        case 0x60: return RETURN_OP;
+        default: return NOT_JUMP_OP;
+    }
+
 }

@@ -44,7 +44,7 @@ void load_prg(char *filename) {
     byte buff[1];
     
     while(!feof(prg)) {
-        fread(buff, sizeof(buff), 1, prg);
+        fread(buff, sizeof(byte), 1, prg);
         RAM_iter = mem_write(RAM_iter, addr_start, buff[0]);
         addr_start ++;
     }
