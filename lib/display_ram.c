@@ -55,7 +55,7 @@ void show_RAM(byte move_opt) {
 
 
 WINDOW *create_win_RAM(int max_rows, int max_cols) {
-    WINDOW *win = newwin(max_rows/2 - 3, max_cols/2, 0, 0);
+    WINDOW *win = newwin(max_rows/2, max_cols/2, 0, 0);
 
     box(win, 0, 0);
     mvwprintw(win, 0, 1, "RAM display");

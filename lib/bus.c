@@ -56,8 +56,6 @@ void start_bus(char *filename) {
     mainCPU.PC = 0x0600; // Starting address of program counter
     load_prg(filename);
     displ_print("Program loaded\n");
-    // load program into memory
-    // create_execution_tree
 }
 
 

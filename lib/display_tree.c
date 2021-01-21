@@ -6,9 +6,9 @@ ExecNode *tree_root = NULL;
 
 WINDOW *create_win_tree(int max_rows, int max_cols, char *filename) {
     WINDOW *win = newwin(
-            max_rows/2 + 2,
+            max_rows/2 - 1,
             max_cols/2,
-            max_rows/2-3,
+            max_rows/2,
             0
             );
     
@@ -25,6 +25,12 @@ WINDOW *create_win_tree(int max_rows, int max_cols, char *filename) {
 }
 
 void display_node(ExecNode *node, int start_y, int start_x) {
+
+    if(node == NULL) {
+        mvwprintw(TREE_WIN, start_y, start_x, "NULL");
+        return;
+    }
+
     mvwprintw(TREE_WIN, start_y, start_x, "Index: %d\n", node->index);
     mvwprintw(TREE_WIN, start_y+1, start_x, "Opcode: 0x%02x\n", node->opcode);
     mvwprintw(TREE_WIN, start_y+2, start_x, "Name: %s\n", node->name);
@@ -40,14 +46,37 @@ void display_node(ExecNode *node, int start_y, int start_x) {
     }
 }
 
+
 void display_tree() {
     werase(TREE_WIN);
     mvwprintw(TREE_WIN, 0, 1, "Execution tree");
+    display_node(tree_root, 2, 10);
 
-    display_node(tree_root, 5, 6);
+    if(tree_root != NULL) {
+        display_node(tree_root->yes, 11, 2);
+        display_node(tree_root->no, 11, 30);
+    }
 
+    mvwprintw(TREE_WIN, 10, 2, "--NON COND-- (x)");
+    mvwprintw(TREE_WIN, 10, 30, "--COND-- (c)");
 
     box(TREE_WIN, 0, 0);
     refresh();
     wrefresh(TREE_WIN);
 }
+
+
+void tree_next(int pos_next) {
+    if(tree_root == NULL) {
+        return;
+    }
+    if(pos_next == TREE_NON_COND) {
+        tree_root = tree_root->yes;
+    }
+    else if(pos_next == TREE_COND) {
+        tree_root = tree_root->no;
+    }
+
+    display_tree();
+}
+

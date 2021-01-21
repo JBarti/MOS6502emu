@@ -13,6 +13,8 @@ void print_tree(ExecNode *tree_root) {
 
 
 ExecNode *allocate_exec_node() {
+    static byte args_none[2] = {0, 0};
+
     ExecNode *node = (ExecNode *)malloc(sizeof(ExecNode));
     if(node == NULL) {
         printf("Cannot allocate memory for ExecNode\n");
@@ -22,7 +24,7 @@ ExecNode *allocate_exec_node() {
     node->index = 0xffff;
     node->opcode = 0xff;
     node->name = "Unknown";
-    node->args = NULL;
+    node->args = args_none;
     node->cmd_len = 0;
     node->addressing_mode_name = "Unknown";
     node->addressing_mode = NULL;
@@ -97,19 +99,18 @@ ExecNode *build_tree_util(ExecNodeList *list_root, ExecNodeList *curr_cmd, ExecN
     
     switch(is_jump) {
         case NOT_JUMP_OP:
-            tree_root->yes = curr_cmd->val;
-            build_tree_util(list_root, curr_cmd->next, tree_root->yes);
+            tree_root->yes = build_tree_util(list_root, curr_cmd->next, curr_cmd->val);
             break;
         case BRANCH_OP:
-            tree_root->no = curr_cmd->val;
-            build_tree_util(list_root, curr_cmd->next, tree_root->no);
+            tree_root->yes = build_tree_util(list_root, curr_cmd->next, curr_cmd->val);
+            tree_root->yes->no = get_branch_node(list_root, curr_cmd->val);
             break;
         case JUMP_OP:
         case SR_JUMP_OP:
-            tree_root->yes = get_jmp_node(curr_cmd->val);
+            return get_jmp_node(curr_cmd->val);
             break;
         case RETURN_OP:
-            tree_root->yes = get_return_node(curr_cmd->val);
+            return get_return_node(curr_cmd->val);
             break;
         default:
             printf("This should not happen");

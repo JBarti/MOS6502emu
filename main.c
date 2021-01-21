@@ -35,6 +35,12 @@ void key_press(char key) {
             tick();
             show_CPU_stat(get_cpu_state());
             break;
+        case 'x':
+            tree_next(TREE_NON_COND);
+            break;
+        case 'c':
+            tree_next(TREE_COND);
+            break;
     }
 }
 

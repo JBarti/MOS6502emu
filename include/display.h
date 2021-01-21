@@ -8,6 +8,9 @@
 #define PREV_PAGE 1
 #define CURR_PAGE 2
 
+#define TREE_NON_COND 0
+#define TREE_COND 1
+
 typedef unsigned char byte;
 typedef signed char sbyte;
 typedef unsigned short addr16;
@@ -33,4 +36,5 @@ void show_CPU_stat(char *cpu_state);
 WINDOW *create_win_CPU(int max_rows, int max_cols);
 
 void display_tree();
+void tree_next(int pos_next);
 WINDOW *create_win_tree(int max_rows, int max_cols, char *filename);
