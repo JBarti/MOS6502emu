@@ -1,6 +1,6 @@
 
 
-For the time being we will focus on emulating the NES CPU, since I have absolutely no idea what I'm doing.
+For the time being we will focus on emulating the NES CPU.
 
 In this README file I will be writing information I had trouble finding on the internet.
 
